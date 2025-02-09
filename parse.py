@@ -1,7 +1,7 @@
 import pandas as pd
 import networkx as nx
 
-def parse_airport_data(airports_file, routes_file):
+def parse_airport_data(airports_file = "./airports.csv", routes_file = "./pre_existing_routes.csv"):
     """
     Parse les fichiers CSV des aéroports et des routes pour construire un graphe dirigé.
     
@@ -36,9 +36,7 @@ def parse_airport_data(airports_file, routes_file):
     return G
 
 # Exemple d'utilisation
-airports_path = "./airports.csv"
-routes_path = "./pre_existing_routes.csv"
-network_graph = parse_airport_data(airports_path, routes_path)
+network_graph = parse_airport_data()
 
 # Vérification : nombre de nœuds et d'arêtes
 print(f"Nombre d'aéroports: {network_graph.number_of_nodes()}")
