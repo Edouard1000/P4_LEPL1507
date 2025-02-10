@@ -2,7 +2,7 @@ import pandas as pd
 import networkx as nx
 import utility_functions as uf
 
-def parse_airport_data(airports_file = "./airports.csv", routes_file = "./pre_existing_routes.csv"):
+def parse_airport_data(airports_file = "./csv/airports.csv", routes_file = "./csv/pre_existing_routes.csv"):
     """
     Parse les fichiers CSV des aéroports et des routes pour construire un graphe dirigé.
     
