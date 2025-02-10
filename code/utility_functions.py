@@ -2,6 +2,7 @@ import math
 import pandas as pd
 import networkx as nx
 import math
+import heapq
 from geographiclib.geodesic import Geodesic
 
 geod = Geodesic.WGS84
@@ -28,8 +29,6 @@ def euclidean_distance(x, y):
 
 def shortest_path(graph, start_node, end_node):
     return nx.dijkstra_path(graph, start_node, end_node, weight="distance")
-
-import heapq
 
 def dijkstra(incidence_matrix, start, end):
     n = len(incidence_matrix)
