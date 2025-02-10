@@ -1,5 +1,6 @@
 import pandas as pd
 import networkx as nx
+import utility_functions as uf
 
 def parse_airport_data(airports_file, routes_file):
     """
@@ -31,7 +32,9 @@ def parse_airport_data(airports_file, routes_file):
     # Ajouter les routes existantes comme arêtes
     for _, row in routes_df.iterrows():
         if row["ID_start"] in G.nodes and row["ID_end"] in G.nodes:
-            G.add_edge(row["ID_start"], row["ID_end"])
+            x = (G.nodes[row["ID_start"]]["latitude"], G.nodes[row["ID_start"]]["longitude"])
+            y = (G.nodes[row["ID_end"]]["latitude"], G.nodes[row["ID_end"]]["longitude"])
+            G.add_edge(row["ID_start"], row["ID_end"], distance=uf.euclidean_distance(x, y))
     
     return G
 
