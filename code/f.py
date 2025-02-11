@@ -2,25 +2,33 @@ import math
 import pandas as pd
 import networkx as nx
 import utility_functions as uf
-from dijkstra import dijkstra
 
-def mask(array, mask):
-    return [a for a, m in zip(array, mask) if m]
+def mask(matrix, mask):
+    masked_matrix = []
+    for row, mask_row in zip(matrix, mask):
+        masked_row = [val if m else float('inf') for val, m in zip(row, mask_row)]
+        masked_matrix.append(masked_row)
+    return masked_matrix
 
 #trajectories = [1,1,1,1,1,1,1,1,1,1,...]
-def f(trajectories, network,C , output_folder, Airport_to_connect_list):
+def f(trajectories, network,C , output_folder, Airport_to_connect_list_indext):
     
-    N = Airport_to_connect_list.length
+    N = Airport_to_connect_list_indext.length
     f = 0
 
-    # Merge all tuples into a single list
-    #Airport_to_connect_list = [(At, [Al1,Al2]), (A3, A4), ...]
+    start = range(0, network.nodes.length)
+    end = range(0, network.nodes.length)
 
-    merged_list = [item for sublist in Airport_to_connect_list for item in sublist]
-    MaximMatrix = dijkstra(network, merged_list[0], merged_list[1])
+    trajectoriesMatrix = []
+    for i in range(0, network.nodes.length):
+        for j in range (0, network.nodes.length):
+            trajectoriesMatrix.append(trajectories[i*network.nodes.length + j])
 
-    for At, Al in Airport_to_connect_list:
-        f += MaximMatrix[At][Al]
+    adjacence_matrix = mask(network.adjacence_matrix, trajectoriesMatrix)
+    maxMat = uf.MaximMatrix(adjacence_matrix, start, end)
+
+    for At ,Al in Airport_to_connect_list_indext:
+        f = f + maxMat[At][Al]  
 
     f = f*1/N + C * sum(trajectories)
     return f
