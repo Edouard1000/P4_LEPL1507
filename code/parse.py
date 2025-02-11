@@ -16,7 +16,6 @@ def parse_airport_data(airports_file = "./csv/airports.csv", routes_file = "./cs
     # Charger les fichiers CSV
     airports_df = pd.read_csv(airports_file)
     routes_df = pd.read_csv(routes_file)
-    indexes = airports_df["ID"].values 
     
     # Création d'un graphe dirigé
     G = nx.DiGraph()
@@ -24,7 +23,8 @@ def parse_airport_data(airports_file = "./csv/airports.csv", routes_file = "./cs
     # Ajouter les aéroports comme nœuds avec leurs informations
     i=0
     for _, row in airports_df.iterrows():
-        G.add_node(i,
+        G.add_node(row["ID"], 
+                   index=i,
                    name=row["name"], 
                    city=row["city"], 
                    country=row["country"], 
@@ -35,11 +35,9 @@ def parse_airport_data(airports_file = "./csv/airports.csv", routes_file = "./cs
     # Ajouter les routes existantes comme arêtes
     for _, row in routes_df.iterrows():
         if row["ID_start"] in G.nodes and row["ID_end"] in G.nodes:
-            x_index = indexes.index(row["ID_start"])
-            y_index = indexes.index(row["ID_end"])
-            x = (G.nodes[x_index]["latitude"], G.nodes[x_index]["longitude"])
-            y = (G.nodes[y_index]["latitude"], G.nodes[y_index]["longitude"])
-            G.add_edge(x_index, y_index, distance=uf.earth_distance(*x, *y))
+            x = (G.nodes[row["ID_start"]]["latitude"], G.nodes[row["ID_start"]]["longitude"])
+            y = (G.nodes[row["ID_end"]]["latitude"], G.nodes[row["ID_end"]]["longitude"])
+            G.add_edge(row["ID_start"], row["ID_end"], distance=uf.earth_distance(*x, *y))
     
     return G
 

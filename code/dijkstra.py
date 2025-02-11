@@ -7,14 +7,14 @@ import heapq
 def dijkstra_all_paths(graph, starts, endss):
     n = len(graph.nodes)
     distances = [[float('inf')] * n for _ in range(n)]
-    for i in range(len(start)):
+    for i in range(len(starts)):
         start = starts[i]
         ends = endss[i]
         distances[start] = 0
         priority_queue = [(0, start)]
         visited = [False] * n
         
-        while priority_queue & ends:
+        while priority_queue and ends:
             current_distance, current_node = heapq.heappop(priority_queue)
 
             if visited[current_node]:
@@ -34,5 +34,5 @@ def dijkstra_all_paths(graph, starts, endss):
     return distances
 
 def dijkstra_all_paths_2(graph):
-    returns dict(nx.all_pairs_dijkstra(graph, weight="distance"))
+    return dict(nx.all_pairs_dijkstra(graph, weight="distance"))
 
