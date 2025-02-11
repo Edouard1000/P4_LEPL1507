@@ -2,23 +2,25 @@ import sys
 import os
 import random
 import networkx as nx
+import matplotlib.pyplot as plt
+import copy
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from code import utility_functions as uf
 from code import dijkstra as dij
 import time
 
-def generate_graph():
+def generate_graph(num_nodes=10, prob_edge=0.1, num_starts=5, num_ends_per_start=5):
     graph = nx.DiGraph()
     
-    for i in range(20):
+    for i in range(num_nodes):
         graph.add_node(i, index = i, latitude = random.uniform(-90, 90), longitude = random.uniform(-180, 180))
 
-    for i in range(20):
-        for j in range(20):
-            if i != j and random.random() < 0.1:  # 10% de chances d'ajouter une arête
+    for i in range(num_nodes):
+        for j in range(num_nodes):
+            if i != j and random.random() < prob_edge:  # 10% de chances d'ajouter une arête
                 graph.add_edge(i, j, distance=random.randint(1, 20))  # Poids aléatoire entre 1 et 20
 
-    def generate_paths(graph, num_starts=10, num_ends_per_start=5):
+    def generate_paths(graph, num_starts=num_starts, num_ends_per_start=num_ends_per_start):
         nodes = list(graph.nodes)
         starts = random.sample(nodes, num_starts)  # Sélectionne des nœuds de départ aléatoires
         ends = []
@@ -30,34 +32,50 @@ def generate_graph():
 
         return starts, ends
     
-    starts, endss = generate_paths(graph, num_starts=len(graph.nodes), num_ends_per_start=len(graph.nodes)//3)
+    starts, endss = generate_paths(graph)
     return graph, starts, endss
 
-def dijkstra_tests():
-    graph, starts, endss = generate_graph()
+def dijkstra_tests(num_nodes=10, prob_edge=0.1, num_starts=5, num_ends_per_start=5):
+    graph, starts, endss = generate_graph(num_nodes=num_nodes, prob_edge=prob_edge, num_starts=num_starts, num_ends_per_start=num_ends_per_start)
 
     start_time = time.time()
-    distances = dij.dijkstra_all_paths(graph, starts, endss)
+    distances, paths = dij.dijkstra_all_paths(graph, starts, copy.deepcopy(endss))
     end_time = time.time()
-    print(f"Time taken for our Dijkstra's algorithm: {end_time - start_time} seconds")
-    start_time = time.time()
+
+    start_time2 = time.time()
     distances2 = dij.dijkstra_all_paths_2(graph)
-    end_time = time.time()
-    print(f"Time taken for NetworkX's Dijkstra's algorithm: {end_time - start_time} seconds")
-    return distances,distances2, graph, starts, endss
+    end_time2 = time.time()
 
-distances, distances2, graph, starts, endss = dijkstra_tests()
-print( "VERIF DES DISTANCES :")
-for i in starts:
+    start_time3 = time.time()
+    distances3, paths3 = dij.optimized_dijkstra(graph, starts, copy.deepcopy(endss))
+    end_time3 = time.time()
+
+    print(f"Time taken for our Dijkstra's algorithm: {end_time - start_time} seconds")
+    print(f"Time taken for NetworkX's Dijkstra's algorithm: {end_time2 - start_time2} seconds")
+    print(f"Time taken for optimized Dijkstra's algorithm: {end_time3 - start_time3} seconds")
+    print("our Dijkstra's algorithm is {} times faster than NetworkX's".format((end_time2 - start_time2)/(end_time - start_time)))
+    print("our Dijkstra's algorithm is {} times faster than optimized Dijkstra's".format((end_time3 - start_time3)/(end_time - start_time)))
+    return distances, distances2, distances3, starts, endss, paths, paths3, graph
+
+#------#
+#-TEST-#
+#------#
+
+distances, distances2, distances3, starts, endss, paths, paths3, graph = dijkstra_tests(num_nodes=70, prob_edge=0.5, num_starts=5, num_ends_per_start=5)
+print( "VERIF DES DISTANCES ")
+for i in range(len(starts)): 
+    start = starts[i]  
     for j in endss[i]:
-        if j in distances2[i][0]:
-            print(f"Distance entre {i} et {j} : {distances[i][j]}")
-            print(f"Distance 2 entre {i} et {j} : {distances2[i][0][j]}")
-            assert distances[i][j] == distances2[i][0][j], f"Erreur entre {i} et {j} : {distances[i][j]} != {distances2[i][0][j]}"
-import matplotlib.pyplot as plt
-
-pos = nx.spring_layout(graph)  # Positionne les nœuds pour une visualisation claire
-nx.draw(graph, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=200, font_size=5)
-labels = nx.get_edge_attributes(graph, 'distance')
-nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)
-plt.show()
+        if j in distances2[start][0]:
+            assert distances[start][j] == distances2[start][0][j], f"Erreur: {distances[start][j]} != {distances2[start][0][j]}"
+            assert distances[start][j] == distances3[start][j], f"Erreur: {distances[start][j]} != {distances3[start][j]}"
+        if paths[start][j] != [] and paths[start][j] != None:
+            #print("Distance entre",start," et ",j," : ",distances[start][j])
+            #print("Chemin : ",paths[start][j])
+            #print("CHemin 3 : ",paths3[start][j])
+            pass
+#pos = nx.spring_layout(graph)  # Positionne les nœuds pour une visualisation claire
+#nx.draw(graph, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=200, font_size=5)
+#labels = nx.get_edge_attributes(graph, 'distance')
+#nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels, font_size=5)
+#plt.show()
