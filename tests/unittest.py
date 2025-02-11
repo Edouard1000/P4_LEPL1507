@@ -1,8 +1,8 @@
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../code')))
-import utility_functions as uf # Now you can import normally
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from code import utility_functions as uf
 
 # import code.utility_functions as uf
 

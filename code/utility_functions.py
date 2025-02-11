@@ -55,6 +55,8 @@ def dijkstra(incidence_matrix, start, end):
 
     return distances[end]
 
+
+
 def earth_distance(lat1, lon1, lat2, lon2):
     g = geod.Inverse(lat1, lon1, lat2, lon2)
     return g['s12'] / 1000  # Conversion de la distance en kilomètres

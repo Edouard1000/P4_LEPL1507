@@ -4,4 +4,4 @@ csv : contains the csv files about the airports and routes data
 
 tests : contains tests files for various uses
 
-Run : "python f.py" to 
+Run : "python main.py" to find the optimal routes to keep
