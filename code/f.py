@@ -2,10 +2,13 @@ import math
 import pandas as pd
 import networkx as nx
 import utility_functions as uf
-from dijkstra import dijkstra
 
-def mask(array, mask):
-    return [a for a, m in zip(array, mask) if m]
+def mask(matrix, mask):
+    masked_matrix = []
+    for row, mask_row in zip(matrix, mask):
+        masked_row = [val if m else float('inf') for val, m in zip(row, mask_row)]
+        masked_matrix.append(masked_row)
+    return masked_matrix
 
 #trajectories = [1,1,1,1,1,1,1,1,1,1,...]
 def f(trajectories, network,C , output_folder, Airport_to_connect_list_indext):
@@ -15,7 +18,14 @@ def f(trajectories, network,C , output_folder, Airport_to_connect_list_indext):
 
     start = range(0, network.nodes.length)
     end = range(0, network.nodes.length)
-    maxMat = uf.MaximMatrix(network.adjacence_matrix, start, end)
+
+    trajectoriesMatrix = []
+    for i in range(0, network.nodes.length):
+        for j in range (0, network.nodes.length):
+            trajectoriesMatrix.append(trajectories[i*network.nodes.length + j])
+
+    adjacence_matrix = mask(network.adjacence_matrix, trajectoriesMatrix)
+    maxMat = uf.MaximMatrix(adjacence_matrix, start, end)
 
     for At ,Al in Airport_to_connect_list_indext:
         f = f + maxMat[At][Al]  
