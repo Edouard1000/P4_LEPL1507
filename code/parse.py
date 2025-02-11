@@ -47,3 +47,10 @@ network_graph = parse_airport_data()
 # Vérification : nombre de nœuds et d'arêtes
 print(f"Nombre d'aéroports: {network_graph.number_of_nodes()}")
 print(f"Nombre de routes: {network_graph.number_of_edges()}")
+
+
+network_graph_test = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
+
+# Vérification : nombre de nœuds et d'arêtes du graphe de test
+print(f"Nombre d'aéroports: {network_graph_test.number_of_nodes()}")
+print(f"Nombre de routes: {network_graph_test.number_of_edges()}")
