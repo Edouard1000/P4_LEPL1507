@@ -8,19 +8,17 @@ def mask(array, mask):
     return [a for a, m in zip(array, mask) if m]
 
 #trajectories = [1,1,1,1,1,1,1,1,1,1,...]
-def f(trajectories, network,C , output_folder, Airport_to_connect_list):
+def f(trajectories, network,C , output_folder, Airport_to_connect_list_indext):
     
-    N = Airport_to_connect_list.length
+    N = Airport_to_connect_list_indext.length
     f = 0
 
-    # Merge all tuples into a single list
-    #Airport_to_connect_list = [(At, [Al1,Al2]), (A3, A4), ...]
+    start = range(0, network.nodes.length)
+    end = range(0, network.nodes.length)
+    maxMat = uf.MaximMatrix(network.adjacence_matrix, start, end)
 
-    merged_list = [item for sublist in Airport_to_connect_list for item in sublist]
-    MaximMatrix = dijkstra(network, merged_list[0], merged_list[1])
-
-    for At, Al in Airport_to_connect_list:
-        f += MaximMatrix[At][Al]
+    for At ,Al in Airport_to_connect_list_indext:
+        f = f + maxMat[At][Al]  
 
     f = f*1/N + C * sum(trajectories)
     return f
