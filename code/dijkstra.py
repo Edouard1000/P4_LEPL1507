@@ -34,5 +34,5 @@ def dijkstra_all_paths(graph, starts, endss):
     return distances
 
 def dijkstra_all_paths_2(graph):
-    returns dict(nx.all_pairs_dijkstra(graph, weight="distance"))
+    return dict(nx.all_pairs_dijkstra(graph, weight="distance"))
 
