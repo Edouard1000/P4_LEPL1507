@@ -31,7 +31,6 @@ def dijkstra_all_paths(graph, starts, endss):
         distances[start][start] = 0
         priority_queue = [(0, start)]
         visited = [False] * n
-        print("current start :",start," with ends :",ends)
         while priority_queue and ends:
             current_distance, current_node = heapq.heappop(priority_queue)
 
@@ -44,17 +43,13 @@ def dijkstra_all_paths(graph, starts, endss):
             for neighbor, weight in graph[current_node].items():
                 i = graph.nodes[neighbor]["index"]
                 new_distance = weight.get("distance")  
-                print("new_distance",new_distance) 
-                print("visited",visited) 
                 if new_distance>0 and not visited[i]:
                     # update the distance from current to neighbor if a shorter path is found
                     if distances[current_node][i] < new_distance:
                         distances[current_node][i] = new_distance
                     distance = current_distance + new_distance
-                    print("distance",distance)
                     # update the distance from start to neighbor if a shorter path is found
                     if distance < distances[start][i]:
-                        print("distance",distance)
                         distances[start][i] = distance
                         heapq.heappush(priority_queue, (distance, i))
 
@@ -62,4 +57,6 @@ def dijkstra_all_paths(graph, starts, endss):
 
 def dijkstra_all_paths_2(graph):
     return dict(nx.all_pairs_dijkstra(graph, weight="distance"))
+
+
 
