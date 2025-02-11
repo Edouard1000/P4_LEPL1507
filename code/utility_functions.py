@@ -30,8 +30,8 @@ def euclidean_distance(x, y):
 def shortest_path(graph, start_node, end_node):
     return nx.dijkstra_path(graph, start_node, end_node, weight="distance")
 
-def dijkstra(incidence_matrix, start, end):
-    n = len(incidence_matrix)
+def dijkstra(adjacence_matrix, start, end): # arêter Dijkstra dès qu'on atteint le noeud de fin? | modifier le poids des arêtes : poids_i,j = poids_i,j + C
+    n = len(adjacence_matrix)
     distances = [float('inf')] * n
     distances[start] = 0
     priority_queue = [(0, start)]
@@ -45,7 +45,7 @@ def dijkstra(incidence_matrix, start, end):
 
         visited[current_node] = True
 
-        for neighbor, weight in enumerate(incidence_matrix[current_node]):
+        for neighbor, weight in enumerate(adjacence_matrix[current_node]):
             if weight > 0 and not visited[neighbor]:
                 distance = current_distance + weight
 

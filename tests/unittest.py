@@ -33,7 +33,7 @@ def distance_test():
     print("All distance tests pass")
 
 def dijstra_test():
-    incidence_matrix = [
+    adjacence_matrix = [
         [0, 1, 4, 0, 0, 0],
         [0, 0, 4, 2, 7, 0],
         [0, 0, 0, 3, 4, 0],
@@ -43,7 +43,7 @@ def dijstra_test():
     ]
     start_node = 0
     end_node = 5
-    assert (uf.dijkstra(incidence_matrix, start_node, end_node) == 7) 
+    assert (uf.dijkstra(adjacence_matrix, start_node, end_node) == 7) 
     print("All Dijstra tests pass")
 
 print("")
