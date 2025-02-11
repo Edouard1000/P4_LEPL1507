@@ -2,6 +2,10 @@ import math
 import pandas as pd
 import networkx as nx
 import utility_functions as uf
+from dijkstra import dijkstra
+
+def mask(array, mask):
+    return [a for a, m in zip(array, mask) if m]
 
 def f(trajectories, network,C , output_folder, Airport_to_connect_list):
     
@@ -9,13 +13,15 @@ def f(trajectories, network,C , output_folder, Airport_to_connect_list):
     f = 0
 
     # Merge all tuples into a single list
-    merged_list = [item for sublist in Airport_to_connect_list for item in sublist]
+    #Airport_to_connect_list = [(At, [Al1,Al2]), (A3, A4), ...]
+
+    merged_list = [item for sublist in Airport_to_connect_list for item in sublist] # [At, [Al1, Al2,...], A3, A4, ...]
     MaximMatrix = dijkstra(network, merged_list[0], merged_list[1])
 
     for At, Al in Airport_to_connect_list:
         f += MaximMatrix[At][Al]
 
-    f = f*1/N + C * len(trajectories)
+    f = f*1/N + C * sum(trajectories)
     return f
 
 def generateNeighMatrix(array):
