@@ -9,11 +9,11 @@ from code import dijkstra as dij
 def dijkstra_tests():
     graph = nx.DiGraph()
     
-    for i in range(10):
+    for i in range(20):
         graph.add_node(i, index = i, latitude = random.uniform(-90, 90), longitude = random.uniform(-180, 180))
 
-    for i in range(10):
-        for j in range(10):
+    for i in range(20):
+        for j in range(20):
             if i != j and random.random() < 0.1:  # 10% de chances d'ajouter une arête
                 graph.add_edge(i, j, distance=random.randint(1, 20))  # Poids aléatoire entre 1 et 20
 
@@ -38,7 +38,6 @@ print( "VERIF DES DISTANCES :")
 for i in starts:
     for j in endss[i]:
         print(f"Distance entre {i} et {j}: {distances[i][j]}")
-print(distances)  # Affiche les distances entre les nœuds
 import matplotlib.pyplot as plt
 
 pos = nx.spring_layout(graph)  # Positionne les nœuds pour une visualisation claire
