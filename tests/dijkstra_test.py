@@ -5,8 +5,9 @@ import networkx as nx
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from code import utility_functions as uf
 from code import dijkstra as dij
+import time
 
-def dijkstra_tests():
+def generate_graph():
     graph = nx.DiGraph()
     
     for i in range(20):
@@ -30,14 +31,29 @@ def dijkstra_tests():
         return starts, ends
     
     starts, endss = generate_paths(graph, num_starts=len(graph.nodes), num_ends_per_start=len(graph.nodes)//3)
-    distances = dij.dijkstra_all_paths(graph, starts, endss)
-    return distances, graph, starts, endss
+    return graph, starts, endss
 
-distances, graph, starts, endss = dijkstra_tests()
+def dijkstra_tests():
+    graph, starts, endss = generate_graph()
+
+    start_time = time.time()
+    distances = dij.dijkstra_all_paths(graph, starts, endss)
+    end_time = time.time()
+    print(f"Time taken for our Dijkstra's algorithm: {end_time - start_time} seconds")
+    start_time = time.time()
+    distances2 = dij.dijkstra_all_paths_2(graph)
+    end_time = time.time()
+    print(f"Time taken for NetworkX's Dijkstra's algorithm: {end_time - start_time} seconds")
+    return distances,distances2, graph, starts, endss
+
+distances, distances2, graph, starts, endss = dijkstra_tests()
 print( "VERIF DES DISTANCES :")
 for i in starts:
     for j in endss[i]:
-        print(f"Distance entre {i} et {j}: {distances[i][j]}")
+        if j in distances2[i][0]:
+            print(f"Distance entre {i} et {j} : {distances[i][j]}")
+            print(f"Distance 2 entre {i} et {j} : {distances2[i][0][j]}")
+            assert distances[i][j] == distances2[i][0][j], f"Erreur entre {i} et {j} : {distances[i][j]} != {distances2[i][0][j]}"
 import matplotlib.pyplot as plt
 
 pos = nx.spring_layout(graph)  # Positionne les nœuds pour une visualisation claire
