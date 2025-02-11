@@ -53,7 +53,16 @@ def dijkstra(adjacence_matrix, start, end): # arêter Dijkstra dès qu'on attein
                     distances[neighbor] = distance
                     heapq.heappush(priority_queue, (distance, neighbor))
 
-    return distances[end]
+    toReturn = []
+    for e in end:
+        toReturn.append(distances[e])
+    return toReturn
+
+def MaximMatrix(adjacence_matrix, start, end):
+    MaximMatrix = []
+    for s in start:
+        MaximMatrix.append(dijkstra(adjacence_matrix, s, end))
+    return MaximMatrix
 
 
 
