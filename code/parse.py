@@ -34,7 +34,7 @@ def parse_airport_data(airports_file = "./csv/airports.csv", routes_file = "./cs
         if row["ID_start"] in G.nodes and row["ID_end"] in G.nodes:
             x = (G.nodes[row["ID_start"]]["latitude"], G.nodes[row["ID_start"]]["longitude"])
             y = (G.nodes[row["ID_end"]]["latitude"], G.nodes[row["ID_end"]]["longitude"])
-            G.add_edge(row["ID_start"], row["ID_end"], distance=uf.euclidean_distance(x, y))
+            G.add_edge(row["ID_start"], row["ID_end"], distance=uf.earth_distance(x[0], x[1], y[0], y[1]))
     
     return G
 
@@ -44,3 +44,5 @@ network_graph = parse_airport_data()
 # Vérification : nombre de nœuds et d'arêtes
 print(f"Nombre d'aéroports: {network_graph.number_of_nodes()}")
 print(f"Nombre de routes: {network_graph.number_of_edges()}")
+
+#print(network_graph.nodes)
