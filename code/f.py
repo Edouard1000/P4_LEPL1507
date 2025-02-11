@@ -9,7 +9,9 @@ def f(trajectories, network,C , output_folder, Airport_to_connect_list):
     f = 0
 
     # Merge all tuples into a single list
-    merged_list = [item for sublist in Airport_to_connect_list for item in sublist]
+    #Airport_to_connect_list = [(At, [Al1,Al2]), (A3, A4), ...]
+
+    merged_list = [item for sublist in Airport_to_connect_list for item in sublist] # [At, [Al1, Al2,...], A3, A4, ...]
     MaximMatrix = dijkstra(network, merged_list[0], merged_list[1])
 
     for At, Al in Airport_to_connect_list:
