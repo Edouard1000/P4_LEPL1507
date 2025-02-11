@@ -4,6 +4,7 @@ import random
 import networkx as nx
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from code import utility_functions as uf
+from code import dijkstra as dij
 
 def dijkstra_tests():
     graph = nx.DiGraph()
@@ -14,6 +15,30 @@ def dijkstra_tests():
     for i in range(100):
         for j in range(100):
             if i != j and random.random() < 0.1:  # 10% de chances d'ajouter une arête
-                graph.add_edge(i, j, weight=random.randint(1, 20))  # Poids aléatoire entre 1 et 20
+                graph.add_edge(i, j, distance=random.randint(1, 20))  # Poids aléatoire entre 1 et 20
 
-    return graph
+    def generate_paths(graph, num_starts=10, num_ends_per_start=5):
+        nodes = list(graph.nodes)
+        starts = random.sample(nodes, num_starts)  # Sélectionne des nœuds de départ aléatoires
+        ends = []
+
+        for start in starts:
+            possible_ends = [node for node in nodes if node != start]  # Exclut le départ lui-même
+            end_nodes = random.sample(possible_ends, min(num_ends_per_start, len(possible_ends)))  # Sélectionne les destinations
+            ends.append(end_nodes)
+
+        return starts, ends
+    
+    starts, endss = generate_paths(graph, num_starts=len(graph.nodes), num_ends_per_start=len(graph.nodes)//3)
+    distances = dij.dijkstra_all_paths(graph, starts, endss)
+    return distances, graph
+
+distances, graph = dijkstra_tests()
+print(distances)  # Affiche les distances entre les nœuds
+import matplotlib.pyplot as plt
+
+pos = nx.spring_layout(graph)  # Positionne les nœuds pour une visualisation claire
+nx.draw(graph, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=500, font_size=10)
+labels = nx.get_edge_attributes(graph, 'weight')
+nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)
+plt.show()
