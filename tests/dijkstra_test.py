@@ -64,7 +64,7 @@ print( "VERIF DES DISTANCES ")
 for i in range(len(starts)): 
     start = starts[i]  
     for j in endss[i]:
-        assert distances[start][j] == distances4[start][j], f"Erreur: {distances[start][j]} != {distances4[start][0][j]}"
+        assert distances[start][j] == distances4[start][j], f"Erreur: {distances[start][j]} != {distances4[start][j]}"
         if paths[start][j] != [] and paths[start][j] != None:
             print("Distance entre",start," et ",j," : ",distances[start][j])
             print("Chemin : ",paths[start][j])
