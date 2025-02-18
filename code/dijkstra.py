@@ -123,6 +123,37 @@ def dijkstra_adj(adjacency, starts, endss):
                         heapq.heappush(priority_queue, (distance, neighbor))
     return distances, paths
 
+def dijkstra_adj_list(adj_list, dist_matrix, starts, endss):
+    n = len(dist_matrix)
+    distances = [None] * n
+    paths = [None] * n
+    for i, start in enumerate(starts):
+        ends = set(endss[i])
+        distances[start] = [float('inf')] * n
+        paths[start] = [None] * n
+        distances[start][start] = 0
+        priority_queue = [(0, start)]
+        visited = [False] * n
+        while priority_queue and ends:
+            current_distance, current_node = heapq.heappop(priority_queue)
+            if visited[current_node]:
+                continue
+            if current_node in ends:
+                ends.remove(current_node)
+            visited[current_node] = True
+            for neighbor in adj_list[current_node]:
+                new_distance = dist_matrix[current_node][neighbor]
+                if new_distance > 0 and not visited[neighbor]:
+                    distance = current_distance + new_distance
+                    if distance < distances[start][neighbor]:
+                        distances[start][neighbor] = distance
+                        if current_node == start:
+                            paths[start][neighbor] = []
+                        else:
+                            paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]
+                        heapq.heappush(priority_queue, (distance, neighbor))
+    return distances, paths
+
 #def dijkstra_opti_adj(adj, starts, endss):
 #    distances = {}  
 #    paths = {}      
