@@ -3,6 +3,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './code')))
 from code.parse import parse_airports_data
 from code.f import f
+from code.
 
 # Assuming the data file is named 'airports_data.txt' and located in the same directory
 airports_file = "./csv/airports.csv"
