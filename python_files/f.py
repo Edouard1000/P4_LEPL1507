@@ -6,7 +6,7 @@ import dijkstra as dij
 
 def appliquer_masque(dico, masque):
     indices_valides = {i for i, v in enumerate(masque) if v == 1}
-    print(indices_valides)
+    # print(indices_valides)
     new_dico = {}
     
     current_indices = 0
