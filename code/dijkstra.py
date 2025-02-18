@@ -1,8 +1,6 @@
 import math
 import pandas as pd
 import networkx as nx
-from scipy.sparse.csgraph import dijkstra
-import numpy as np
 import math
 import heapq
 import copy
@@ -27,8 +25,8 @@ dict: A dictionary where keys are source nodes and values are dictionaries with 
 pass
 def dijkstra_all_paths(graph, starts, endss):
     n = len(graph.nodes)
-    distances = [None] * n
-    paths = [None] * n
+    distances = {}
+    paths = {}
     for i, start in enumerate(starts):
         ends = set(endss[i])
         distances[start] = [float('inf')] * n
@@ -110,27 +108,27 @@ def dijkstra_adj(adjacency, starts, endss):
                         heapq.heappush(priority_queue, (distance, neighbor))
     return distances, paths
 
-def dijkstra_opti_adj(adj, starts, endss):
-    distances = {}  
-    paths = {}      
-    
-    for i, start in enumerate(starts):
-        ends = set(endss[i])  # Convert to set for fast lookup
-        distances[start] = {}
-        paths[start] = {}
-
-        # Run scipy optimized Dijkstra for a single source
-        shortest_distances, predecessors = dijkstra(adj, indices=start, return_predecessors=True)
-
-        # Store only the necessary results
-        for end in ends:
-            distances[start][end] = shortest_distances[end]
-            path = []
-            current = end
-            while current != -9999:  # -9999 indicates no predecessor
-                path.append(current)
-                current = predecessors[current]
-            path.reverse()
-            paths[start][end] = path
-    return distances, paths
+#def dijkstra_opti_adj(adj, starts, endss):
+#    distances = {}  
+#    paths = {}      
+#    
+#    for i, start in enumerate(starts):
+#        ends = set(endss[i])  # Convert to set for fast lookup
+#        distances[start] = {}
+#        paths[start] = {}
+#
+#        # Run scipy optimized Dijkstra for a single source
+#        shortest_distances, predecessors = dijkstrascipy(adj, indices=start, return_predecessors=True)
+#
+#        # Store only the necessary results
+#        for end in ends:
+#            distances[start][end] = shortest_distances[end]
+#            path = []
+#            current = end
+#            while current != -9999:  # -9999 indicates no predecessor
+#                path.append(current)
+#                current = predecessors[current]
+#            path.reverse()
+#            paths[start][end] = path
+#    return distances, paths
 

@@ -27,45 +27,6 @@ def euclidean_distance(x, y):
     d = 2 * math.atan2(math.sqrt(c), math.sqrt(1-c))
     return RAYON_TERRESTRE * d
 
-def shortest_path(graph, start_node, end_node):
-    return nx.dijkstra_path(graph, start_node, end_node, weight="distance")
-
-def dijkstra(adjacence_matrix, start, end): # arêter Dijkstra dès qu'on atteint le noeud de fin? | modifier le poids des arêtes : poids_i,j = poids_i,j + C
-    n = len(adjacence_matrix)
-    distances = [float('inf')] * n
-    distances[start] = 0
-    priority_queue = [(0, start)]
-    visited = [False] * n
-
-    while priority_queue:
-        current_distance, current_node = heapq.heappop(priority_queue)
-
-        if visited[current_node]:
-            continue
-
-        visited[current_node] = True
-
-        for neighbor, weight in enumerate(adjacence_matrix[current_node]):
-            if weight > 0 and not visited[neighbor]:
-                distance = current_distance + weight
-
-                if distance < distances[neighbor]:
-                    distances[neighbor] = distance
-                    heapq.heappush(priority_queue, (distance, neighbor))
-
-    toReturn = []
-    for e in end:
-        toReturn.append(distances[e])
-    return toReturn
-
-def MaximMatrix(adjacence_matrix, start, end):
-    MaximMatrix = []
-    for s in start:
-        MaximMatrix.append(dijkstra(adjacence_matrix, s, end))
-    return MaximMatrix
-
-
-
 def earth_distance(lat1, lon1, lat2, lon2):
     g = geod.Inverse(lat1, lon1, lat2, lon2)
     return g['s12'] / 1000  # Conversion de la distance en kilomètres
