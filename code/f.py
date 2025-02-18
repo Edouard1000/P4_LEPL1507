@@ -97,7 +97,7 @@ def generateNeighMatrix(array):
             array[i] = 1
     return neighList
 
-def IlliasgenerateNeighMatrix(array):
+def IliasgenerateNeighMatrix(array):
     neighList = []
     for i in range(len(array)):
         if(array[i] == 1):
