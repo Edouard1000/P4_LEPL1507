@@ -3,12 +3,9 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
 from python_files.parse import parse_airport_data
 import python_files.f as f
-import python_files.utility_functions
+import python_files.utility_functions as uf
 import networkx as nx
 import pandas as pd
-
-
-
 
 def main():
     """
