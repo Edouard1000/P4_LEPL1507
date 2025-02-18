@@ -54,7 +54,7 @@ def f(trajectories, network, C, airport_to_connect):
     f += C * sum(trajectories)
     return f
 
-def findOptimalTrajectory(network,C , output_folder, Airport_to_connect_list):
+def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
     "prend en argument une liste d'ajacence"
     "prend en argument un cout C"
     "prend en argument un dossier de sortie"
@@ -62,9 +62,28 @@ def findOptimalTrajectory(network,C , output_folder, Airport_to_connect_list):
 
     "retourne la trajectoire optimale (liste de boolean)"
 
-    current_f_value = f()
+    sizeOfnetwork = 0
+    for key in network:
+        for _ in network[key]:
+            SizeOfnetwork +=1
 
-    pass 
+    trajectory = [1 for _ in range(0, sizeOfnetwork)]
+    current_f_value = f(trajectory, network, C, airport_to_connect_list)
+    
+    update = True
+    while(update):
+        update = False
+        for neigh in generateNeighMatrix(trajectory):
+            new_f_value = f(neigh, network, C, airport_to_connect_list)
+            if new_f_value < current_f_value:
+                current_f_value = new_f_value
+                trajectory = neigh
+                update = True
+
+    with open(f"{output_folder}/optimal_trajectory.txt", "w") as file:
+        file.write(",".join(map(str, trajectory)))
+
+    return trajectory
 
 def generateNeighMatrix(array):
     neighList = []
