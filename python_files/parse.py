@@ -1,6 +1,6 @@
 import pandas as pd
 import networkx as nx
-import utility_functions as uf
+from python_files import utility_functions as uf
 
 import pandas as pd
 import networkx as nx
