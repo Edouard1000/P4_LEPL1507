@@ -154,6 +154,44 @@ def dijkstra_adj_list(adj_list, dist_matrix, starts, endss):
                         heapq.heappush(priority_queue, (distance, neighbor))
     return distances, paths
 
+
+def new_dijkstra_adj(adjacency, starts, endss, distances, paths, removed_edge):
+    u, v = removed_edge  # Arête supprimée
+    n = len(adjacency)
+    affected_starts = set()
+
+    # Identifier les trajets impactés
+    for start in starts:
+        for end in endss[starts.index(start)]:
+            if paths[start][end] and u in paths[start][end] and v in paths[start][end]:
+                affected_starts.add(start)
+
+    # Recalculer Dijkstra uniquement pour les trajets affectés
+    for start in affected_starts:
+        ends = set(endss[starts.index(start)])
+        distances[start] = [float('inf')] * n
+        paths[start] = [None] * n
+        distances[start][start] = 0
+        priority_queue = [(0, start)]
+        visited = [False] * n
+        
+        while priority_queue:
+            current_distance, current_node = heapq.heappop(priority_queue)
+            if visited[current_node]:
+                continue
+            visited[current_node] = True
+            if current_node in ends:
+                ends.remove(current_node)
+            for neighbor, new_distance in enumerate(adjacency[current_node]):
+                if new_distance > 0 and not visited[neighbor]:
+                    distance = current_distance + new_distance
+                    if distance < distances[start][neighbor]:
+                        distances[start][neighbor] = distance
+                        paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]
+                        heapq.heappush(priority_queue, (distance, neighbor))
+
+    return distances, paths
+
 #def dijkstra_opti_adj(adj, starts, endss):
 #    distances = {}  
 #    paths = {}      
