@@ -41,7 +41,7 @@ def plot_airport_network(airports_file, routes_file, title="Airports and Flight 
             lat=[source['latitude'], destination['latitude']],
             lon=[source['longitude'], destination['longitude']],
             mode='lines',
-            line=dict(width=2, color='blue'),
+            line=dict(width=1, color='blue'),
             opacity=0.6
         ))
 
@@ -61,3 +61,4 @@ def plot_airport_network(airports_file, routes_file, title="Airports and Flight 
 # Example usage
 plot_airport_network('csv/airports.csv', 'csv/pre_existing_routes.csv', title="Global Airport Network")
 plot_airport_network('csv/testFileAirports.csv', 'csv/testFilePreExistingRoutes.csv', title="Test Airport Network")
+plot_airport_network('csv/airports_europe.csv', 'csv/pre_existing_routes_europe.csv', title="New Airport Network")
