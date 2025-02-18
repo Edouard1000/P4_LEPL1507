@@ -5,6 +5,10 @@ import math
 import heapq
 import copy
 
+# ----------------------------
+# --- Dijkstra avec Graphe ---
+# ----------------------------
+
 """
 Compute the shortest paths from multiple start nodes to multiple end nodes in a graph using Dijkstra's algorithm.
 Parameters:
@@ -55,9 +59,6 @@ def dijkstra_all_paths(graph, starts, endss):
                         heapq.heappush(priority_queue, (distance, j))
     return distances, paths
 
-def dijkstra_all_paths_2(graph):
-    return dict(nx.all_pairs_dijkstra(graph, weight="distance"))
-
 def optimized_dijkstra(graph, starts, endss):
     distances = {}  
     paths = {}      
@@ -78,6 +79,20 @@ def optimized_dijkstra(graph, starts, endss):
 
     return distances, paths
 
+# -------------------------------
+# --- Dijkstra avec Adjacence ---
+# -------------------------------
+
+'''
+Compute the shortest paths from multiple start nodes to multiple end nodes in a graph using Dijkstra's algorithm.
+Parameters:
+adjacency (list of list of float): The adjacency matrix of the graph.
+starts (list of int): List of starting node indices.
+endss (list of list of int): List of lists, where each sublist contains end node indices corresponding to each start node.
+Returns:
+list of list of float: A 2D list where the element at [i][j] represents the shortest distance from node i to node j.
+list of list of list of int: A 3D list where the element at [i][j] represents the shortest path from node i to node j.
+ '''
 def dijkstra_adj(adjacency, starts, endss):
     n = len(adjacency)
     distances = [None] * n

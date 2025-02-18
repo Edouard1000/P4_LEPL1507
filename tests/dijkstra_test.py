@@ -41,10 +41,6 @@ def dijkstra_tests(num_nodes=10, prob_edge=0.1, num_starts=5, num_ends_per_start
     distances, paths = dij.dijkstra_all_paths(graph, starts, copy.deepcopy(endss))
     end_time = time.time()
 
-    start_time2 = time.time()
-    distances2 = dij.dijkstra_all_paths_2(graph)
-    end_time2 = time.time()
-
     start_time3 = time.time()
     distances3, paths3 = dij.optimized_dijkstra(graph, starts, copy.deepcopy(endss))
     end_time3 = time.time()
@@ -54,10 +50,8 @@ def dijkstra_tests(num_nodes=10, prob_edge=0.1, num_starts=5, num_ends_per_start
     end_time4 = time.time()
 
     print(f"Time taken for our Dijkstra's algorithm: {end_time - start_time} seconds")
-    print(f"Time taken for NetworkX's Dijkstra's algorithm: {end_time2 - start_time2} seconds")
     print(f"Time taken for optimized Dijkstra's algorithm: {end_time3 - start_time3} seconds")
     print(f"Time taken for adjacency matrix Dijkstra's algorithm: {end_time4 - start_time4} seconds")
-    print("our Dijkstra's algorithm is {} times faster than NetworkX's".format((end_time2 - start_time2)/(end_time - start_time)))
     print("our Dijkstra's algorithm is {} times faster than optimized Dijkstra's".format((end_time3 - start_time3)/(end_time - start_time)))
     return distances, distances4, starts, endss, paths, paths4, graph
 
