@@ -60,6 +60,7 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
     "prend en argument un cout C"
     "prend en argument un dossier de sortie"
     "prend en argument une liste d'aeroport a connecter"
+    "prend en argument une methode : 'only sub', 'Ilias' "
 
     "retourne la trajectoire optimale (liste de boolean)"
 
@@ -86,6 +87,7 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
 
     return trajectory
 
+
 def generateNeighMatrix(array):
     neighList = []
     for i in range(len(array)):
@@ -93,6 +95,19 @@ def generateNeighMatrix(array):
             array[i] = 0
             neighList.append(array.copy())
             array[i] = 1
+    return neighList
+
+def IlliasgenerateNeighMatrix(array):
+    neighList = []
+    for i in range(len(array)):
+        if(array[i] == 1):
+            array[i] = 0
+            neighList.append(array.copy())
+            array[i] = 1
+        if(array[i] == 0):
+            array[i] = 1
+            neighList.append(array.copy())
+            array[i] = 0
     return neighList
     
         
