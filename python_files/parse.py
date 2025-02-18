@@ -2,44 +2,53 @@ import pandas as pd
 import networkx as nx
 import utility_functions as uf
 
-def parse_airport_data(airports_file = "./csv/airports.csv", routes_file = "./csv/pre_existing_routes.csv"):
+import pandas as pd
+import networkx as nx
+import utility_functions as uf  
+
+def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pre_existing_routes.csv"):
     """
-    Parse les fichiers CSV des aéroports et des routes pour construire un graphe dirigé.
-    
+    Parse les fichiers CSV des aéroports et des routes pour construire un graphe dirigé avec indexation des sommets.
+
     Args:
         airports_file (str): Chemin vers le fichier airports.csv
         routes_file (str): Chemin vers le fichier pre_existing_routes.csv
-    
+
     Returns:
-        networkx.DiGraph: Graphe dirigé représentant le réseau aérien
+        dict: Liste d'adjacence avec les indices des sommets
     """
     # Charger les fichiers CSV
     airports_df = pd.read_csv(airports_file)
     routes_df = pd.read_csv(routes_file)
-    
+
     # Création d'un graphe dirigé
     G = nx.DiGraph()
-    
-    # Ajouter les aéroports comme nœuds avec leurs informations
-    i=0
-    for _, row in airports_df.iterrows():
-        G.add_node(row["ID"], 
-                   index=i,
+
+    # Création d'un mapping ID -> Index
+    id_to_index = {}
+
+    # Ajouter les aéroports comme nœuds avec leurs indices
+    for i, (_, row) in enumerate(airports_df.iterrows()):
+        airport_id = row["ID"]
+        id_to_index[airport_id] = i  # Associer l'ID à un index unique
+        G.add_node(i,  # Utilisation de `i` comme index
                    name=row["name"], 
                    city=row["city"], 
                    country=row["country"], 
                    latitude=row["latitude"], 
                    longitude=row["longitude"])
-        i+=1
-    
+
     # Ajouter les routes existantes comme arêtes
     for _, row in routes_df.iterrows():
-        if row["ID_start"] in G.nodes and row["ID_end"] in G.nodes:
-            x = (G.nodes[row["ID_start"]]["latitude"], G.nodes[row["ID_start"]]["longitude"])
-            y = (G.nodes[row["ID_end"]]["latitude"], G.nodes[row["ID_end"]]["longitude"])
-            G.add_edge(row["ID_start"], row["ID_end"], distance=uf.earth_distance(*x, *y))
-    
+        start_id, end_id = row["ID_start"], row["ID_end"]
+        if start_id in id_to_index and end_id in id_to_index:
+            start_idx, end_idx = id_to_index[start_id], id_to_index[end_id]
+            x = (G.nodes[start_idx]["latitude"], G.nodes[start_idx]["longitude"])
+            y = (G.nodes[end_idx]["latitude"], G.nodes[end_idx]["longitude"])
+            G.add_edge(start_idx, end_idx, distance=uf.earth_distance(*x, *y))
+
     return G
+
 
 # Exemple d'utilisation
 network_graph = parse_airport_data()
