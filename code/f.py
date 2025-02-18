@@ -34,7 +34,6 @@ def f(trajectories, network, C, airport_to_connect):
 
     N = len(airport_to_connect)
     f = 0
-    confortPassager = 0
     network = appliquer_masque(network, trajectories)
 
     starts = []
@@ -55,7 +54,6 @@ def f(trajectories, network, C, airport_to_connect):
     f += C * sum(trajectories)
     return f
 
-
 def findOptimalTrajectory(network,C , output_folder, Airport_to_connect_list):
     "prend en argument une liste d'ajacence"
     "prend en argument un cout C"
@@ -63,6 +61,8 @@ def findOptimalTrajectory(network,C , output_folder, Airport_to_connect_list):
     "prend en argument une liste d'aeroport a connecter"
 
     "retourne la trajectoire optimale (liste de boolean)"
+
+    current_f_value = f()
 
     pass 
 
