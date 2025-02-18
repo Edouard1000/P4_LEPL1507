@@ -67,7 +67,7 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
     sizeOfnetwork = 0
     for key in network:
         for _ in network[key]:
-            SizeOfnetwork +=1
+            sizeOfnetwork +=1
 
     trajectory = [1 for _ in range(0, sizeOfnetwork)]
     current_f_value = f(trajectory, network, C, airport_to_connect_list)
