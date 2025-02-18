@@ -24,7 +24,7 @@ def appliquer_masque(dico, masque):
     
 
 def f(trajectories, network, C, airport_to_connect):
-    "prend en argument une liste de bollean qui represente si la trajectoire(dans network) est prise ou non "
+    "prend en argument une liste de boolean qui represente si la trajectoire(dans network) est prise ou non "
     "prend en argument une liste d'ajacence avec les distances ex {0 : [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}"
     "prend en argument un cout C"
     "prend en argument un dossier de sortie"
@@ -32,18 +32,19 @@ def f(trajectories, network, C, airport_to_connect):
 
     "retourne la valeure de f"
 
-    N = len(airport_to_connect)
-    f = 0
-    network = appliquer_masque(network, trajectories)
+    N = len(airport_to_connect) # nombre de trajets dans J
+    f = 0 # valeur de la fonction objectif
+    confortPassager = 0 
+    network = appliquer_masque(network, trajectories) # on applique le masque qui supprime les aretes non selectionnees
 
-    starts = []
-    ends = {}
-    for i in range(0, len(airport_to_connect)):
+    starts = [] # liste des aeroports de depart
+    ends = {} # dictionnaire des aeroports d'arrivee
+    for i in range(0, N): # on remplit les listes starts et ends
         start = airport_to_connect[i][0]
-        starts.append(start)
-        if(start not in ends):
+        starts.append(start) # on ajoute l'aeroport de depart
+        if(start not in ends): # si l'aeroport n'est pas deja dans le dictionnaire, on l'ajoute
             ends[start] = []
-        ends[start].append(airport_to_connect[i][1])
+        ends[start].append(airport_to_connect[i][1]) # on ajoute l'aeroport d'arrivee a la liste des aeroports d'arrivee de l'aeroport de depart
 
     MaximMatrix = dij.dijkstra_adj(network, starts, ends)
     
