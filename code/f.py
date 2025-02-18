@@ -2,36 +2,69 @@ import math
 import pandas as pd
 import networkx as nx
 import utility_functions as uf
+import dijkstra as dij
 
-def mask(matrix, mask):
-    masked_matrix = []
-    for row, mask_row in zip(matrix, mask):
-        masked_row = [val if m else float('inf') for val, m in zip(row, mask_row)]
-        masked_matrix.append(masked_row)
-    return masked_matrix
-
-#trajectories = [1,1,1,1,1,1,1,1,1,1,...]
-def f(trajectories, network,C , output_folder, Airport_to_connect_list_indext):
+def appliquer_masque(dico, masque):
+    indices_valides = {i for i, v in enumerate(masque) if v == 1}
+    print(indices_valides)
+    new_dico = {}
     
-    N = Airport_to_connect_list_indext.length
+    current_indices = 0
+
+    for key in dico:
+        for el in dico[key]:
+            if current_indices in indices_valides :
+                if(key not in new_dico):
+                    new_dico[key] = []
+                new_dico[key].append(el)
+            current_indices += 1
+              
+    return new_dico
+        
+    
+
+def f(trajectories, network, C, airport_to_connect):
+    "prend en argument une liste de bollean qui represente si la trajectoire(dans network) est prise ou non "
+    "prend en argument une liste d'ajacence avec les distances ex {0 : [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}"
+    "prend en argument un cout C"
+    "prend en argument un dossier de sortie"
+    "prend en argument une liste d'aeroport a connecter ex [[0, 2], [1, 3], [2, 3]]"
+
+    "retourne la valeure de f"
+
+    N = len(airport_to_connect)
     f = 0
+    confortPassager = 0
+    network = appliquer_masque(network, trajectories)
 
-    start = range(0, network.nodes.length)
-    end = range(0, network.nodes.length)
+    starts = []
+    ends = {}
+    for i in range(0, len(airport_to_connect)):
+        start = airport_to_connect[i][0]
+        starts.append(start)
+        if(start not in ends):
+            ends[start] = []
+        ends[start].append(airport_to_connect[i][1])
 
-    trajectoriesMatrix = []
-    for i in range(0, network.nodes.length):
-        for j in range (0, network.nodes.length):
-            trajectoriesMatrix.append(trajectories[i*network.nodes.length + j])
-
-    adjacence_matrix = mask(network.adjacence_matrix, trajectoriesMatrix)
-    maxMat = uf.MaximMatrix(adjacence_matrix, start, end)
-
-    for At ,Al in Airport_to_connect_list_indext:
-        f = f + maxMat[At][Al]  
-
-    f = f*1/N + C * sum(trajectories)
+    MaximMatrix = dij.dijkstra_adj(network, starts, ends)
+    
+    for key in ends:
+        for el in ends[key]:
+            f += MaximMatrix[key][el]
+    f /= N
+    f += C * sum(trajectories)
     return f
+
+
+def findOptimalTrajectory(network,C , output_folder, Airport_to_connect_list):
+    "prend en argument une liste d'ajacence"
+    "prend en argument un cout C"
+    "prend en argument un dossier de sortie"
+    "prend en argument une liste d'aeroport a connecter"
+
+    "retourne la trajectoire optimale (liste de boolean)"
+
+    pass 
 
 def generateNeighMatrix(array):
     neighList = []
@@ -41,25 +74,17 @@ def generateNeighMatrix(array):
             neighList.append(array.copy())
             array[i] = 1
     return neighList
-
-def findOptimalTrajectory(network,C , output_folder, Airport_to_connect_list):
-    current_trajectories = [1] * network.edges.length
-    current_f = f(current_trajectories, network,C , output_folder, Airport_to_connect_list)
-    while(True):
-        updated = False
-        for trajectories in generateNeighMatrix(current_trajectories):
-            new_f = f(trajectories, network,C , output_folder, Airport_to_connect_list)
-            if(new_f < current_f):
-                current_f = new_f
-                current_trajectories = trajectories
-                updated = True
-        if(not updated):
-            break
-    return current_trajectories
+    
         
 
 
-#print(generateNeighMatrix([1,0,1,1,1,1,1,1,1,1]))
+# print(generateNeighMatrix([1,0,1,1,1,1,1,1,1,1]))
+
+dico = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
+masque = [0, 0, 0, 1, 1, 1, 0, 1]
+
+resultat = appliquer_masque(dico, masque)
+print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
 
 
 
