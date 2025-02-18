@@ -1,11 +1,9 @@
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './code')))
-import code.parse as parse
-import networkx as nx
-import code.utility_functions as uf
-import code.dijkstra as dij
-import code.f as f
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
+from python_files.parse import parse_airport_data
+import python_files.f as f
+import python_files.utility_functions
 
 
 
@@ -18,10 +16,10 @@ def main():
     routes_file = "./csv/pre_existing_routes.csv"
 
     
-    network_graph = parse.parse_airport_data(airports_file, routes_file)
+    network_graph = parse_airport_data(airports_file, routes_file)
 
     
-    airport_to_connect_list = None # à completer
+    airport_to_connect_list = [[0,1]] # à completer
 
     
     C = 5

@@ -6,7 +6,7 @@ import dijkstra as dij
 
 def appliquer_masque(dico, masque):
     indices_valides = {i for i, v in enumerate(masque) if v == 1}
-    print(indices_valides)
+    # print(indices_valides)
     new_dico = {}
     
     current_indices = 0
@@ -46,7 +46,7 @@ def f(trajectories, network, C, airport_to_connect):
             ends[start] = []
         ends[start].append(airport_to_connect[i][1]) # on ajoute l'aeroport d'arrivee a la liste des aeroports d'arrivee de l'aeroport de depart
 
-    MaximMatrix = dij.dijkstra_adj(network, starts, ends)[0]
+    MaximMatrix = dij.dijkstra_adj_list(network, starts, ends)[0]
     
     for key in ends:
         for el in ends[key]:
@@ -115,11 +115,11 @@ def IliasgenerateNeighMatrix(array):
 
 # print(generateNeighMatrix([1,0,1,1,1,1,1,1,1,1]))
 
-dico = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
-masque = [0, 0, 0, 1, 1, 1, 0, 1]
+# dico = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
+# masque = [0, 0, 0, 1, 1, 1, 0, 1]
 
-resultat = appliquer_masque(dico, masque)
-print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
+# resultat = appliquer_masque(dico, masque)
+# print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
 
 
 
