@@ -46,7 +46,7 @@ def f(trajectories, network, C, airport_to_connect):
             ends[start] = []
         ends[start].append(airport_to_connect[i][1]) # on ajoute l'aeroport d'arrivee a la liste des aeroports d'arrivee de l'aeroport de depart
 
-    MaximMatrix = dij.dijkstra_adj(network, starts, ends)[0]
+    MaximMatrix = dij.dijkstra_adj_list(network, starts, ends)[0]
     
     for key in ends:
         for el in ends[key]:
