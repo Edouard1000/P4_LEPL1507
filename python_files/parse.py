@@ -36,7 +36,8 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
                    city=row["city"], 
                    country=row["country"], 
                    latitude=row["latitude"], 
-                   longitude=row["longitude"])
+                   longitude=row["longitude"],
+                   id = airport_id)
 
     # Ajouter les routes existantes comme arêtes
     for _, row in routes_df.iterrows():
