@@ -115,11 +115,11 @@ def IliasgenerateNeighMatrix(array):
 
 # print(generateNeighMatrix([1,0,1,1,1,1,1,1,1,1]))
 
-dico = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
-masque = [0, 0, 0, 1, 1, 1, 0, 1]
+# dico = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
+# masque = [0, 0, 0, 1, 1, 1, 0, 1]
 
-resultat = appliquer_masque(dico, masque)
-print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
+# resultat = appliquer_masque(dico, masque)
+# print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
 
 
 
