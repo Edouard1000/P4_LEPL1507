@@ -25,8 +25,8 @@ dict: A dictionary where keys are source nodes and values are dictionaries with 
 pass
 def dijkstra_all_paths(graph, starts, endss):
     n = len(graph.nodes)
-    distances = [None] * n
-    paths = [None] * n
+    distances = {}
+    paths = {}
     for i, start in enumerate(starts):
         ends = set(endss[i])
         distances[start] = [float('inf')] * n
@@ -77,4 +77,58 @@ def optimized_dijkstra(graph, starts, endss):
                 paths[start][end] = shortest_paths[end]
 
     return distances, paths
+
+def dijkstra_adj(adjacency, starts, endss):
+    n = len(adjacency)
+    distances = [None] * n
+    paths = [None] * n
+    for i, start in enumerate(starts):
+        ends = set(endss[i])
+        distances[start] = [float('inf')] * n
+        paths[start] = [None] * n
+        distances[start][start] = 0
+        priority_queue = [(0, start)]
+        visited = [False] * n
+        while priority_queue and ends:
+            current_distance, current_node = heapq.heappop(priority_queue)
+            if visited[current_node]:
+                continue
+            if current_node in ends:
+                ends.remove(current_node)
+            visited[current_node] = True
+            for neighbor, new_distance in enumerate(adjacency[current_node]):
+                if new_distance > 0 and not visited[neighbor]:
+                    distance = current_distance + new_distance
+                    if distance < distances[start][neighbor]:
+                        distances[start][neighbor] = distance
+                        if current_node == start:
+                            paths[start][neighbor] = []
+                        else:
+                            paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]
+                        heapq.heappush(priority_queue, (distance, neighbor))
+    return distances, paths
+
+#def dijkstra_opti_adj(adj, starts, endss):
+#    distances = {}  
+#    paths = {}      
+#    
+#    for i, start in enumerate(starts):
+#        ends = set(endss[i])  # Convert to set for fast lookup
+#        distances[start] = {}
+#        paths[start] = {}
+#
+#        # Run scipy optimized Dijkstra for a single source
+#        shortest_distances, predecessors = dijkstrascipy(adj, indices=start, return_predecessors=True)
+#
+#        # Store only the necessary results
+#        for end in ends:
+#            distances[start][end] = shortest_distances[end]
+#            path = []
+#            current = end
+#            while current != -9999:  # -9999 indicates no predecessor
+#                path.append(current)
+#                current = predecessors[current]
+#            path.reverse()
+#            paths[start][end] = path
+#    return distances, paths
 
