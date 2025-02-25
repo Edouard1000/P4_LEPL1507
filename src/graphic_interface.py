@@ -6,11 +6,11 @@ import plotly.graph_objects as go
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
-import python_files.parse as parse
+import src.parse as parse
 import networkx as nx
-import python_files.utility_functions as uf
-import python_files.dijkstra as dij
-import python_files.f as f
+import src.utility_functions as uf
+import src.dijkstra as dij
+import src.f as f
 
 graph = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
 # Load data

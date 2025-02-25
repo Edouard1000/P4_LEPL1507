@@ -5,15 +5,15 @@ import networkx as nx
 import plotly.graph_objects as go
 
 # Ajouter le dossier contenant les fichiers Python
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
 
 
 
 # Importer les modules nécessaires
-from python_files.parse import parse_airport_data
-import python_files.f as f
-import python_files.utility_functions
-import python_files.airpots_plot as ap 
+from src.parse import parse_airport_data
+import src.f as f
+import src.utility_functions
+import src.airpots_plot as ap 
 
 def testOnSmallSample(airports_file, routes_file, airport_to_connect_list, C=5):
     """
