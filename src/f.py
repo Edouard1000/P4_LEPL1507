@@ -170,7 +170,28 @@ def generateNeighBourhood(array, depth):
                     queue.push((neigh, currentDepth + 1))
     return neighList
 
-
+def IlliasgenerateNeighBourhood(array, depth):
+    def hashArray(array):
+        return "".join(map(str, array))
+    neighList = []
+    visited = {}
+    queue = Queue()
+    queue.push((array, 0))
+    while not queue.empty():
+        currentArray, currentDepth = queue.pop()
+        for neigh in IlliasgenerateNeighBourhood(currentArray):
+            if hashArray(neigh) not in visited:
+                visited[hashArray(neigh)] = []
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+            if hashArray(neigh) in visited and (neigh not in visited[hashArray(neigh)]):
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+    return neighList
 
 
 
