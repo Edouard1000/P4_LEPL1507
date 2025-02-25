@@ -3,11 +3,9 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
 from python_files.parse import parse_airport_data
 import python_files.f as f
-import python_files.utility_functions
+import python_files.utility_functions as uf
 import networkx as nx
-
-
-
+import pandas as pd
 
 def main():
     """
@@ -19,8 +17,10 @@ def main():
     
     network_graph = parse_airport_data(airports_file, routes_file)
     network_graph_adj_list = nx.to_dict_of_lists(network_graph)
-    print(network_graph_adj_list)
-    
+    # print(network_graph_adj_list)
+    network_graph_adj_matrix = nx.adjacency_matrix(network_graph, weight= "distance").todense()
+    df = pd.DataFrame(network_graph_adj_matrix)
+    df.to_csv("output_csv/network_graph_adj_matrix.csv", index=False)
     airport_to_connect_list = [[0,1]] # à completer
 
     
