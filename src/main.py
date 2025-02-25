@@ -10,8 +10,8 @@ def main():
     """
     Fonction principale pour tester l'algorithme de recherche de trajectoire optimale.
     """
-    airports_file = "./csv/airports.csv"
-    routes_file = "./csv/pre_existing_routes.csv"
+    airports_file = "./csv/airports_europe.csv"
+    routes_file = "./csv/pre_existing_routes_europe.csv"
 
     # Dossier de sortie
     output_folder = "./output_csv"
@@ -20,7 +20,9 @@ def main():
     
     network_graph, id_to_index = parse_airport_data(airports_file, routes_file)
     network_graph_adj_list = nx.to_dict_of_lists(network_graph)
-    # print(network_graph_adj_list)
+
+
+    #print(network_graph_adj_list)
     network_graph_adj_matrix = nx.adjacency_matrix(network_graph, weight= "distance").todense()
     df = pd.DataFrame(network_graph_adj_matrix)
     df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False)

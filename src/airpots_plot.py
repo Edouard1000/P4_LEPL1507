@@ -1,9 +1,7 @@
 import pandas as pd
 import plotly.express as px
-import dash
-from dash import dcc, html
 import plotly.graph_objects as go
-from dash.dependencies import Input, Output
+
 
 def plot_airport_network(airports_file, routes_file, title="Airports and Flight Routes"):
     """
