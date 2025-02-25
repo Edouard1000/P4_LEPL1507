@@ -103,7 +103,7 @@ def dijkstra_adj_list(adj_list, starts, endss):
             current_distance, current_node = heapq.heappop(priority_queue)
             if current_node is None:
                 break
-            if visited[current_node]:
+            if visited[current_node] or current_node not in adj_list:
                 continue
             if current_node in ends:
                 ends.remove(current_node)
