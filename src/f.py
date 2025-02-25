@@ -14,7 +14,9 @@ def addlistTofile(list, filename):
 
 def clearFile(filename):
     with open(filename, "w") as file:
-        file.write("")
+        file.write("ID_start,ID_end \n")
+    
+
 
 def appliquer_masque(dico, masque):
     indices_valides = {i for i, v in enumerate(masque) if v == 1}
@@ -122,10 +124,11 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
 
     print(l)
     
-    clearFile(output_folder + "/optimal_trajectory.txt")
+
+    clearFile(output_folder + "/optimal_trajectory.csv")
     for el in l:
-        addlistTofile(el, output_folder + "/optimal_trajectory.txt")
-    print("le fichier à été enregistré à l'adresse : ", output_folder + "/optimal_trajectory.txt")
+        addlistTofile(el, output_folder + "/optimal_trajectory.csv")
+    print("le fichier à été enregistré à l'adresse : ", output_folder + "/optimal_trajectory.csv")
 
     return trajectory
 
