@@ -4,18 +4,13 @@ from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.graph_objects as go
 import networkx as nx
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
-import python_files.parse as parse
-import python_files.utility_functions as uf
-import python_files.dijkstra as dij
-import python_files.f as f
+import parse as parse
+import dijkstra as dij
 
-graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
+graph, id_to_index = parse.parse_airport_data("../csv/airports.csv", "../csv/pre_existing_routes.csv")
 # Load data
-airports = pd.read_csv("csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
-routes = pd.read_csv("csv/pre_existing_routes.csv")      # Columns: Start, End (Airport IDs)
+airports = pd.read_csv("../csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
+routes = pd.read_csv("../csv/pre_existing_routes.csv")      # Columns: Start, End (Airport IDs)
 
 # Create a Dash app
 app = dash.Dash(__name__)
