@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from python_files.parse import parse_airport_data
 import python_files.f as f
 import python_files.utility_functions
-import airpots_plot as ap 
+import python_files.airpots_plot as ap 
 
 def testOnSmallSample(airports_file, routes_file, airport_to_connect_list, C=5):
     """
