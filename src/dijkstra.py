@@ -123,7 +123,7 @@ def dijkstra_adj(adjacency, starts, endss):
                         heapq.heappush(priority_queue, (distance, neighbor))
     return distances, paths
 
-dist_matrix  = pd.read_csv('output_csv/network_graph_adj_matrix', header=None).values
+dist_matrix  = pd.read_csv('./output_csv/network_graph_adj_matrix.csv', header=None).values
 def dijkstra_adj_list(adj_list, starts, endss):
     n = len(dist_matrix)
     distances = [None] * n
