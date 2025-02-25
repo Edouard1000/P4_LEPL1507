@@ -93,7 +93,7 @@ def dijkstra_adj_list(adj_list, starts, endss):
     distances = [None] * n
     paths = [None] * n
     for start in starts:
-        ends = set(endss[starts])
+        ends = set(endss[start])
         distances[start] = [float('inf')] * n
         paths[start] = [None] * n
         distances[start][start] = 0
@@ -103,7 +103,7 @@ def dijkstra_adj_list(adj_list, starts, endss):
             current_distance, current_node = heapq.heappop(priority_queue)
             if current_node is None:
                 break
-            if visited[current_node]:
+            if visited[current_node] or current_node not in adj_list:
                 continue
             if current_node in ends:
                 ends.remove(current_node)

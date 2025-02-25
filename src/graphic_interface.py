@@ -18,26 +18,37 @@ app = dash.Dash(__name__)
 # Layout
 app.layout = html.Div([
     html.H1("Airport Routes Visualization"),
-    html.Label("Select a departure Airport", style={'fontSize': '18px', 'fontWeight': 'bold'}),
-    dcc.Dropdown(
-        id="airport-dropdown1",
-        options=[{"label": name, "value": airport_id} for name, airport_id in zip(airports["name"], airports["ID"])],
-        placeholder="Select an airport",
-        value=airports["ID"].iloc[0],  # Default selection
-        clearable=False
-    ),
-    html.Label("Select a destination Airport", style={'fontSize': '18px', 'fontWeight': 'bold'}),
-    dcc.Dropdown(
-        id="airport-dropdown2",
-        options=[{"label": name, "value": airport_id} for name, airport_id in zip(airports["name"], airports["ID"])],
-        placeholder="Select an airport",
-        value=airports["ID"].iloc[1],  # Default selection
-        clearable=False
-    ), 
+    
+    html.Div([
+        html.Div([
+            html.Label("Select a departure Airport", style={'fontSize': '18px', 'fontWeight': 'bold'}),
+            dcc.Dropdown(
+                id="airport-dropdown1",
+                options=[{"label": name, "value": airport_id} for name, airport_id in zip(airports["name"], airports["ID"])],
+                placeholder="Select an airport",
+                value=airports["ID"].iloc[0],  # Default selection
+                clearable=False
+            )
+        ], style={'width': '45%', 'display': 'inline-block', 'marginRight': '5%'}),
+        
+        html.Div([
+            html.Label("Select a destination Airport", style={'fontSize': '18px', 'fontWeight': 'bold'}),
+            dcc.Dropdown(
+                id="airport-dropdown2",
+                options=[{"label": name, "value": airport_id} for name, airport_id in zip(airports["name"], airports["ID"])],
+                placeholder="Select an airport",
+                value=airports["ID"].iloc[1],  # Default selection
+                clearable=False
+            )
+        ], style={'width': '45%', 'display': 'inline-block'})
+    ], style={'display': 'flex', 'justifyContent': 'space-between'}), 
+    
     html.Label("Best Route", style={'fontSize': '18px', 'fontWeight': 'bold'}),
     html.Div(id="best-route"),
-    dcc.Graph(id="routes-map")
+    
+    dcc.Graph(id="routes-map", figure=go.Figure())
 ])
+
 
 
 # ---------------------------
@@ -132,7 +143,6 @@ def update_best_route(start, end):
     dest_airport = airports[airports["ID"] == end].iloc[0]
     
     current = source_airport
-    color = "blue"
     i = 0
     for next_node in best_path:
         if (i != len(best_path)-1):
@@ -146,7 +156,7 @@ def update_best_route(start, end):
             fig = add_node(fig, current, "intermediate airport")  
         i += 1
         current = next
-    
+    fig.update_layout(showlegend=False)
     return update_layout(fig, f"Routes from {source_airport['name']} to {dest_airport['name']}"), distances[start_ind][end_ind]
 # Run app
 
@@ -176,9 +186,7 @@ def update_layout(fig, title):
         geo=dict(
             scope='world',
             projection_type="natural earth"
-        ),
-        height=600,  # Control the height directly (in pixels)
-        width=1600
+        )
     )
     return fig
 if __name__ == "__main__":
