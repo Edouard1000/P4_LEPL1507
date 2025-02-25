@@ -93,7 +93,7 @@ def dijkstra_adj_list(adj_list, starts, endss):
     distances = [None] * n
     paths = [None] * n
     for start in starts:
-        ends = set(endss[starts])
+        ends = set(endss[start])
         distances[start] = [float('inf')] * n
         paths[start] = [None] * n
         distances[start][start] = 0
