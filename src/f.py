@@ -122,7 +122,7 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
 
     l = translateDicoToList(appliquer_masque(network, trajectory))
 
-    print(l)
+    print("la liste des trajectoires optimales est : ", l)
     
 
     clearFile(output_folder + "/optimal_trajectory.csv")
