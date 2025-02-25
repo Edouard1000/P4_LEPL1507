@@ -1,15 +1,8 @@
 import os
 import sys
-<<<<<<< HEAD:python_files/main.py
 from parse import parse_airport_data
 import f as f
 import utility_functions as uf
-=======
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './python_files')))
-from src.parse import parse_airport_data
-import src.f as f
-import src.utility_functions as uf
->>>>>>> 49e3f45d220135a3858a6aec4934c7aba03826a0:src/main.py
 import networkx as nx
 import pandas as pd
 
