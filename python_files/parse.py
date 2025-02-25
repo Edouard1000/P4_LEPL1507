@@ -37,7 +37,7 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
                    country=row["country"], 
                    latitude=row["latitude"], 
                    longitude=row["longitude"],
-                   id = airport_id)
+                   ID = airport_id)
 
     # Ajouter les routes existantes comme arêtes
     for _, row in routes_df.iterrows():
@@ -48,19 +48,13 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
             y = (G.nodes[end_idx]["latitude"], G.nodes[end_idx]["longitude"])
             G.add_edge(start_idx, end_idx, distance=uf.earth_distance(*x, *y))
 
-    return G
+    return G, id_to_index
 
 
 # Exemple d'utilisation
-network_graph = parse_airport_data()
-
-# Vérification : nombre de nœuds et d'arêtes
-print(f"Nombre d'aéroports: {network_graph.number_of_nodes()}")
-print(f"Nombre de routes: {network_graph.number_of_edges()}")
+network_graph, id_to_index = parse_airport_data()
 
 
-network_graph_test = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
+network_graph_test, id_to_index = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
 
 # Vérification : nombre de nœuds et d'arêtes du graphe de test
-print(f"Nombre d'aéroports: {network_graph_test.number_of_nodes()}")
-print(f"Nombre de routes: {network_graph_test.number_of_edges()}")
