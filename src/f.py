@@ -14,7 +14,7 @@ def addlistTofile(list, filename):
 
 def clearFile(filename):
     with open(filename, "w") as file:
-        file.write("ID_start,ID_end \n")
+        file.write("ID_start,ID_end\n")
     
 
 

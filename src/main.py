@@ -5,6 +5,7 @@ import f as f
 import utility_functions as uf
 import networkx as nx
 import pandas as pd
+import airpots_plot as ap 
 
 def main():
     """
@@ -42,6 +43,7 @@ def main():
     with open(f"{output_folder}/optimal_trajectory.csv", "r") as file:
         saved_trajectory = file.read()
         print("Trajectoire optimale enregistrée dans le fichier:", saved_trajectory)
-
+    ap.plot_airport_network('csv/airports_europe.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
 if __name__ == "__main__":
     main()
+    
