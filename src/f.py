@@ -4,6 +4,7 @@ import networkx as nx
 import utility_functions as uf
 import dijkstra as dij
 import parse as prs
+import random
 
 def addlistTofile(list, filename):
     with open(filename, "a") as file:
@@ -179,7 +180,7 @@ def IlliasgenerateNeighBourhood(array, depth):
     queue.push((array, 0))
     while not queue.empty():
         currentArray, currentDepth = queue.pop()
-        for neigh in IlliasgenerateNeighBourhood(currentArray):
+        for neigh in IliasgenerateNeighMatrix(currentArray):
             if hashArray(neigh) not in visited:
                 visited[hashArray(neigh)] = []
                 visited[hashArray(neigh)].append(neigh)
@@ -216,6 +217,17 @@ class Queue:
 # resultat = appliquer_masque(dico, masque)
 # print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
 
+def findOptimalTrajectoryOptimised(network,C , output_folder, airport_to_connect_list, depth):
+    "prend en argument une liste"
+    "prend en argument un cout C"
+    "prend en argument un dossier de sortie"
+    "prend en argument une liste d'aeroport a connecter"
+    "prend en argument une profondeur de recherche"
+    "prend en argument la profondeur de recherche"
+    
+    "retourne la trajectoire optimale (liste de boolean)"
+
+    return 0;
 
 
 
