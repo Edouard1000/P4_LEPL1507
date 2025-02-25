@@ -88,19 +88,19 @@ def optimized_dijkstra(graph, starts, endss):
     return distances, paths
 
 dist_matrix  = pd.read_csv('./output_csv/network_graph_adj_matrix.csv', header=None).values
-def dijkstra_adj_list(adj_list, starts, endss):
-    n = len(dist_matrix)
-    distances = [None] * n
-    paths = [None] * n
-    for start in starts:
-        ends = set(endss[start])
-        distances[start] = [float('inf')] * n
-        paths[start] = [None] * n
-        distances[start][start] = 0
-        priority_queue = [(0, start)]
-        visited = [False] * n
-        while priority_queue and ends:
-            current_distance, current_node = heapq.heappop(priority_queue)
+def dijkstra_adj_list(adj_list, starts, endss): 
+    n = len(dist_matrix) # Number of nodes
+    distances = [None] * n # Initialize the distance matrix
+    paths = [None] * n # Initialize the path matrix
+    for start in starts: # For each start node
+        ends = set(endss[start]) # Convert endss of start to set for fast lookup
+        distances[start] = [float('inf')] * n # Initialize the distance list for the start node
+        paths[start] = [None] * n # Initialize the path list for the start node
+        distances[start][start] = 0 # Set the distance from the start node to itself to 0
+        priority_queue = [(0, start)] # Initialize the priority queue with the start node
+        visited = [False] * n # Initialize the visited list
+        while priority_queue and ends: # While the priority queue is not empty and there are still end nodes
+            current_distance, current_node = heapq.heappop(priority_queue) # Pop the node with the smallest distance from the priority queue
             if current_node is None:
                 break
             if visited[current_node] or current_node not in adj_list:
