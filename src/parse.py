@@ -56,9 +56,9 @@ def indexToId(index):
 
 
 # Exemple d'utilisation
-network_graph, id_to_index = parse_airport_data()
+# network_graph, id_to_index = parse_airport_data()
 
 
-network_graph_test, id_to_index = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
+# network_graph_test, id_to_index = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
 
 # Vérification : nombre de nœuds et d'arêtes du graphe de test
