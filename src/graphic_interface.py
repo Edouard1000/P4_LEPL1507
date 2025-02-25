@@ -117,75 +117,47 @@ app.layout = html.Div([
 def update_best_route(start, end):
     fig = go.Figure()
     if (end == start or start is None or end is None):
-        fig.update_layout(
-            title=f"Choose a valid start and destination airport",
-            geo=dict(
-                scope='world',
-                projection_type="natural earth"
-            ),
-            height=600,  # Control the height directly (in pixels)
-            width=1600
-        )
         fig = add_node(fig, airports[airports["ID"] == start].iloc[0], color="red")
-        return fig, 0
+        return update_layout(fig, "Choose a valid start and destination airport"), 0
+
     start_ind = id_to_index[start]
     end_ind = id_to_index[end]
     distances, paths = dij.optimized_dijkstra(graph, [start_ind], [[end_ind]])
     best_path = paths[start_ind][end_ind]
 
-    # Create figure
     if best_path is None:
-        fig.update_layout(
-            title=f"No existing route from {start} to {end}",
-            geo=dict(
-                scope='world',
-                projection_type="natural earth"
-            ),
-            height=600,  # Control the height directly (in pixels)
-            width=1600
-        )
-        return fig, 0
+        return update_layout(fig, f"No existing route from {start} to {end}"), 0
 
-    source_airport = airports[airports["ID"] == start]
-    dest_airport = airports[airports["ID"] == end]
-    source_airport = source_airport.iloc[0]
-    dest_airport = dest_airport.iloc[0]
+    source_airport = airports[airports["ID"] == start].iloc[0]
+    dest_airport = airports[airports["ID"] == end].iloc[0]
     
-    # Add routes
     current = source_airport
+    color = "blue"
+    i = 0
     for next_node in best_path:
-        next = airports[airports["ID"] == graph.nodes[next_node]["ID"]]
-        next = next.iloc[0]
-        fig = add_trace(fig, current, next)
-        fig = add_node(fig, next)
+        if (i != len(best_path)-1):
+            next = airports[airports["ID"] == graph.nodes[next_node]["ID"]].iloc[0]
+            fig = add_trace(fig, current, next)
+        if (i == 0):
+            fig = add_node(fig, current, "start airport", color="green")
+        elif (i == len(best_path) - 1):
+            fig = add_node(fig, current, "dest airport", color="red")
+        else:
+            fig = add_node(fig, current, "intermediate airport")  
+        i += 1
         current = next
-    fig = add_trace(fig, current, dest_airport)
-
-    fig = add_node(fig, source_airport, color="red")
-    fig = add_node(fig, dest_airport, color="red")
     
-    # Update layout
-    fig.update_layout(
-        title=f"Routes from {source_airport['name']} to {dest_airport['name']}",
-        geo=dict(
-            scope='world',
-            projection_type="natural earth"
-        ),
-        height=600,  # Control the height directly (in pixels)
-        width=1600
-    )
-
-    return fig, distances[start_ind][end_ind]
+    return update_layout(fig, f"Routes from {source_airport['name']} to {dest_airport['name']}"), distances[start_ind][end_ind]
 # Run app
 
-def add_node(fig, airport, color="blue"):
+def add_node(fig, airport, name, color="blue"):
     fig.add_trace(go.Scattergeo(
         lon=[airport["longitude"]],
         lat=[airport["latitude"]],
         text=f"{airport['name']}",
         mode="markers",
         marker=dict(size=8, color=color),
-        name="Arrival Airport"
+        name=name
     ))
     return fig
 
@@ -196,6 +168,18 @@ def add_trace(fig, current, next, color="blue"):
         mode="lines",
         line=dict(width=1, color=color)
     ))
+    return fig
+
+def update_layout(fig, title):
+    fig.update_layout(
+        title=title,
+        geo=dict(
+            scope='world',
+            projection_type="natural earth"
+        ),
+        height=600,  # Control the height directly (in pixels)
+        width=1600
+    )
     return fig
 if __name__ == "__main__":
     app.run_server(debug=True)

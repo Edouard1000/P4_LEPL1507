@@ -31,20 +31,28 @@ def dijkstra_all_paths(graph, starts, endss):
     n = len(graph.nodes)
     distances = {}
     paths = {}
-    for i, start in enumerate(starts):
-        ends = set(endss[i])
+    for start in starts:
+        ends = set(endss[start])
+
         distances[start] = [float('inf')] * n
         paths[start] = [None] * n
         distances[start][start] = 0
+
         priority_queue = [(0, start)]
         visited = [False] * n
         while priority_queue and ends:
             current_distance, current_node = heapq.heappop(priority_queue)
+            # No existing road to all the destinations destination
+            if current_node is None:
+                break
+            # If the node has already been visited, skip it
             if visited[current_node]:
                 continue
+            # If the node is a destination, remove it from the list of destinations
             if current_node in ends:
                 ends.remove(current_node)
             visited[current_node] = True
+            # For each neighbor of the current node, update the distances and paths
             for neighbor in graph.neighbors(current_node):
                 j = graph.nodes[neighbor]["index"]
                 new_distance = graph[current_node][neighbor].get("distance", float('inf'))
