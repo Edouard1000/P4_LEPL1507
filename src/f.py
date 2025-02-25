@@ -32,6 +32,15 @@ def f(trajectories, network, C, airport_to_connect):
 
     "retourne la valeure de f"
 
+    print("\n ############ ")
+    print("argument = ")
+    print(trajectories)
+    print(network)
+    print(C)
+    print(airport_to_connect)
+    print(" ############ \n")
+
+
     N = len(airport_to_connect) # nombre de trajets dans J
     f = 0 # valeur de la fonction objectif
     confortPassager = 0 
@@ -45,6 +54,12 @@ def f(trajectories, network, C, airport_to_connect):
         if(start not in ends): # si l'aeroport n'est pas deja dans le dictionnaire, on l'ajoute
             ends[start] = []
         ends[start].append(airport_to_connect[i][1]) # on ajoute l'aeroport d'arrivee a la liste des aeroports d'arrivee de l'aeroport de depart
+
+    print("\n ############ ")
+    print("network = ", network)
+    print("starts = ", starts)
+    print("ends = ", ends)
+    print(" ############ \n")
 
     MaximMatrix = dij.dijkstra_adj_list(network, starts, ends)[0]
     
