@@ -7,10 +7,10 @@ import networkx as nx
 import parse as parse
 import dijkstra as dij
 
-graph, id_to_index = parse.parse_airport_data("../csv/airports.csv", "../csv/pre_existing_routes.csv")
+graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
 # Load data
-airports = pd.read_csv("../csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
-routes = pd.read_csv("../csv/pre_existing_routes.csv")      # Columns: Start, End (Airport IDs)
+airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
+routes = pd.read_csv("./csv/pre_existing_routes.csv")      # Columns: Start, End (Airport IDs)
 
 # Create a Dash app
 app = dash.Dash(__name__)
@@ -39,26 +39,6 @@ app.layout = html.Div([
     dcc.Graph(id="routes-map")
 ])
 
-@app.callback(
-    Output("airport-dropdown2", "options"),  # Update the options of the second dropdown
-    Output("airport-dropdown2", "value"),    # Update the value (select a new airport)
-    Input("airport-dropdown1", "value")     # Triggered by changes in the first dropdown
-)
-def update_destination_options(selected_departure):
-    # Remove the selected departure airport from the destination options
-    available_airports = airports[airports["ID"] != selected_departure]
-    
-    # Set the options for the destination dropdown
-    destination_options = [{"label": name, "value": airport_id} for name, airport_id in zip(available_airports["name"], available_airports["ID"])]
-    
-    # If the current destination value matches the departure, update the value
-    current_destination = airports[airports["ID"] == selected_departure].iloc[0]["ID"]
-    if current_destination in [option["value"] for option in destination_options]:
-        new_destination = available_airports["ID"].iloc[0]  # Choose the first available airport
-    else:
-        new_destination = current_destination
-    
-    return destination_options, new_destination
 
 # ---------------------------
 # -- All routes from start --
@@ -67,8 +47,8 @@ def update_destination_options(selected_departure):
 
 # Callback to update the map
 #@app.callback(
-    Output("routes-map", "figure"),
-    [Input("airport-dropdown1", "value")]
+#    Output("routes-map", "figure"),
+#    [Input("airport-dropdown1", "value")]
 #)
 #def update_map(selected_airport):
 #    # Filter routes for the selected airport
@@ -146,6 +126,7 @@ def update_best_route(start, end):
             height=600,  # Control the height directly (in pixels)
             width=1600
         )
+        fig = add_node(fig, airports[airports["ID"] == start].iloc[0], color="red")
         return fig, 0
     start_ind = id_to_index[start]
     end_ind = id_to_index[end]
@@ -175,44 +156,13 @@ def update_best_route(start, end):
     for next_node in best_path:
         next = airports[airports["ID"] == graph.nodes[next_node]["ID"]]
         next = next.iloc[0]
-        fig.add_trace(go.Scattergeo(
-            lon=[current["longitude"], next["longitude"]],
-            lat=[current["latitude"], next["latitude"]],
-            mode="lines",
-            line=dict(width=1, color="blue")
-        ))
-        fig.add_trace(go.Scattergeo(
-            lon=[next["longitude"]],
-            lat=[next["latitude"]],
-            mode="markers",
-            text=f"{next['name']}",
-            marker=dict(size=4, color="blue"),
-            name=f"{next['name']} ({next['ID']})"
-        ))
+        fig = add_trace(fig, current, next)
+        fig = add_node(fig, next)
         current = next
-    fig.add_trace(go.Scattergeo(
-        lon=[current["longitude"], dest_airport["longitude"]],
-        lat=[current["latitude"], dest_airport["latitude"]],
-        mode="lines",
-        line=dict(width=1, color="blue")
-    ))
+    fig = add_trace(fig, current, dest_airport)
 
-    fig.add_trace(go.Scattergeo(
-        lon=[source_airport["longitude"]],
-        lat=[source_airport["latitude"]],
-        text=f"{source_airport['name']}",
-        mode="markers",
-        marker=dict(size=8, color="red"),
-        name="Departure Airport"
-    ))
-    fig.add_trace(go.Scattergeo(
-        lon=[dest_airport["longitude"]],
-        lat=[dest_airport["latitude"]],
-        text=f"{dest_airport['name']}",
-        mode="markers",
-        marker=dict(size=8, color="red"),
-        name="Arrival Airport"
-    ))
+    fig = add_node(fig, source_airport, color="red")
+    fig = add_node(fig, dest_airport, color="red")
     
     # Update layout
     fig.update_layout(
@@ -227,5 +177,25 @@ def update_best_route(start, end):
 
     return fig, distances[start_ind][end_ind]
 # Run app
+
+def add_node(fig, airport, color="blue"):
+    fig.add_trace(go.Scattergeo(
+        lon=[airport["longitude"]],
+        lat=[airport["latitude"]],
+        text=f"{airport['name']}",
+        mode="markers",
+        marker=dict(size=8, color=color),
+        name="Arrival Airport"
+    ))
+    return fig
+
+def add_trace(fig, current, next, color="blue"):
+    fig.add_trace(go.Scattergeo(
+        lon=[current["longitude"], next["longitude"]],
+        lat=[current["latitude"], next["latitude"]],
+        mode="lines",
+        line=dict(width=1, color=color)
+    ))
+    return fig
 if __name__ == "__main__":
     app.run_server(debug=True)
