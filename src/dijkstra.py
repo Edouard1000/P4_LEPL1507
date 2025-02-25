@@ -121,20 +121,71 @@ def dijkstra_adj_list(adj_list, starts, endss):
                         heapq.heappush(priority_queue, (distance, neighbor)) # Push the neighbor to the priority queue
     return distances, paths # Return the distance and path matrices
 
-def new_dijkstra_adj_list(adj_list, starts, endss, prev_distances=None, prev_paths=None): 
+def cor_dijkstra_adj_list(adj_list, starts, endss): 
     n = len(dist_matrix)  # Nombre de nœuds
-    distances = prev_distances if prev_distances else [None] * n  # Réutilisation des distances
-    paths = prev_paths if prev_paths else [None] * n  # Réutilisation des chemins
+    distances = [None] * n  # Matrice des distances
+    paths = [None] * n  # Matrice des chemins
 
-    for start in starts:
-        if distances[start] is None:  # Si non calculé avant, initialiser
+    for start in starts:  
+        ends = set(endss[start])  # Convertir les destinations en ensemble pour accès rapide
+
+        # Initialisation correcte des distances et chemins
+        if distances[start] is None:
             distances[start] = [float('inf')] * n
             paths[start] = [None] * n
-            distances[start][start] = 0
+
+        distances[start][start] = 0
+        priority_queue = [(0, start)]  # File de priorité (distance, nœud)
+        visited = [False] * n  # Marquer les nœuds visités
+
+        while priority_queue and ends:  
+            current_distance, current_node = heapq.heappop(priority_queue)
+
+            if visited[current_node]:  
+                continue  # Ne pas retraiter un nœud
+
+            visited[current_node] = True  
+            if current_node in ends:
+                ends.remove(current_node)  # Supprimer du set des nœuds à atteindre
+
+            for neighbor in adj_list.get(current_node, []):  # Gérer le cas où le nœud n’a pas de voisins
+                new_distance = dist_matrix[current_node][neighbor]
+
+                if new_distance > 0 and not visited[neighbor]:  
+                    distance = current_distance + new_distance
+
+                    if distance < distances[start][neighbor]:  
+                        distances[start][neighbor] = distance
+                        paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]  
+                        heapq.heappush(priority_queue, (distance, neighbor))  
+
+    return distances, paths  # Retourner la matrice des distances et des chemins
+
+def new_dijkstra_adj_list(adj_list, starts, endss, prev_distances=None, prev_paths=None, removed_edge=None): 
+    n = len(dist_matrix) # Nombre de nœuds
+    distances = prev_distances if prev_distances else [None] * n # Initialiser la matrice des distances
+    paths = prev_paths if prev_paths else [None] * n # Initialiser la matrice des chemins
+
+    # Si une arête est supprimée, trouver les nœuds affectés
+    affected_starts = set(starts)  # On garde les starts de base
+    if removed_edge:
+        u, v = removed_edge  # Arête supprimée (u -> v)
+        for start in range(n): # Pour chaque nœud de départ
+            if distances[start] and paths[start] and paths[start][v] is not None: #
+                # Si un chemin passe par v, il est affecté
+                distances[start][v] = float('inf')
+                paths[start][v] = None
+                affected_starts.add(start)
+
+    # Recalculer Dijkstra uniquement pour les nœuds affectés
+    for start in affected_starts:
+        ends = set(endss[start])
+        distances[start] = [float('inf')] * n
+        paths[start] = [None] * n
+        distances[start][start] = 0
 
         priority_queue = [(0, start)]
         visited = [False] * n
-        ends = set(endss[start])  # Convertir en set pour accès rapide
 
         while priority_queue and ends:
             current_distance, current_node = heapq.heappop(priority_queue)
@@ -143,22 +194,25 @@ def new_dijkstra_adj_list(adj_list, starts, endss, prev_distances=None, prev_pat
                 continue
 
             if current_node in ends:
-                ends.remove(current_node)  # Supprimer si atteint
+                ends.remove(current_node)
 
             visited[current_node] = True
 
             for neighbor in adj_list[current_node]:
+                if removed_edge and (current_node, neighbor) == removed_edge:
+                    continue  # Ignorer l'arête supprimée
+                
                 new_distance = dist_matrix[current_node][neighbor]
 
                 if new_distance > 0 and not visited[neighbor]:
                     distance = current_distance + new_distance
 
-                    if distance < distances[start][neighbor]:  # Mise à jour si meilleur chemin trouvé
+                    if distance < distances[start][neighbor]:
                         distances[start][neighbor] = distance
                         paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]
                         heapq.heappush(priority_queue, (distance, neighbor))
 
-    return distances, paths  # Retourne les valeurs mises à jour
+    return distances, paths
 
 '''
 def new_dijkstra_adj(adjacency, starts, endss, distances, paths, removed_edge):
