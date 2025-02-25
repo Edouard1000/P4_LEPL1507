@@ -53,15 +53,6 @@ def f(trajectories, network, C, airport_to_connect):
 
     "retourne la valeure de f"
 
-    print("\n ############ ")
-    print("argument = ")
-    print(trajectories)
-    print(network)
-    print(C)
-    print(airport_to_connect)
-    print(" ############ \n")
-
-
     N = len(airport_to_connect) # nombre de trajets dans J
     f = 0 # valeur de la fonction objectif
     confortPassager = 0 
@@ -76,11 +67,9 @@ def f(trajectories, network, C, airport_to_connect):
             ends[start] = []
         ends[start].append(airport_to_connect[i][1]) # on ajoute l'aeroport d'arrivee a la liste des aeroports d'arrivee de l'aeroport de depart
 
-    print("\n ############ ")
-    print("network = ", network)
-    print("starts = ", starts)
-    print("ends = ", ends)
-    print(" ############ \n")
+    # print("starts = ", starts)
+    # print("ends = ", ends)
+    # print("network = ", network)
 
     MaximMatrix = dij.dijkstra_adj_list(network, starts, ends)[0]
     
@@ -89,6 +78,8 @@ def f(trajectories, network, C, airport_to_connect):
             f += MaximMatrix[key][el]
     f /= N
     f += C * sum(trajectories)
+
+    print("f = ", f)
     return f
 
 def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
@@ -107,11 +98,10 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
 
     trajectory = [1 for _ in range(0, sizeOfnetwork)]
     current_f_value = f(trajectory, network, C, airport_to_connect_list)
-    
     update = True
     while(update):
         update = False
-        for neigh in generateNeighMatrix(trajectory):
+        for neigh in generateNeighBourhood(trajectory, 1):
             new_f_value = f(neigh, network, C, airport_to_connect_list)
             if new_f_value < current_f_value:
                 current_f_value = new_f_value
@@ -119,10 +109,11 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
                 update = True
 
     
-
+    print("la trajectoire optimale est : ", appliquer_masque(network, trajectory))
+    
     l = translateDicoToList(appliquer_masque(network, trajectory))
 
-    print("la liste des trajectoires optimales est : ", l)
+    print(l)
     
 
     clearFile(output_folder + "/optimal_trajectory.csv")
@@ -155,6 +146,7 @@ def IliasgenerateNeighMatrix(array):
             array[i] = 0
     return neighList
 
+
 def generateNeighBourhood(array, depth):
     def hashArray(array):
         return "".join(map(str, array))
@@ -164,20 +156,26 @@ def generateNeighBourhood(array, depth):
     queue.push((array, 0))
     while not queue.empty():
         currentArray, currentDepth = queue.pop()
-        for i in range(len(currentArray)):
-            if currentArray[i] == 1:
-                currentArray[i] = 0
-                hash = hashArray(currentArray)
-                if hash not in visited:
-                    neighList.append(currentArray.copy())
-                    visited[hash] = True
-                    if currentDepth < depth:
-                        queue.push((currentArray, currentDepth + 1))
-                currentArray[i] = 1
+        for neigh in generateNeighMatrix(currentArray):
+            if hashArray(neigh) not in visited:
+                visited[hashArray(neigh)] = []
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+            if hashArray(neigh) in visited and (neigh not in visited[hashArray(neigh)]):
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+    return neighList
 
 
 
-def Queue():
+
+
+
+class Queue:
     def __init__(self):
         self.queue = []
     def push(self, element):
