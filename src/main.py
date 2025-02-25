@@ -39,7 +39,7 @@ def main():
     print("Trajectoire optimale:", optimal_trajectory)
 
     # Vérifier le contenu du fichier de sortie
-    with open(f"{output_folder}/optimal_trajectory.txt", "r") as file:
+    with open(f"{output_folder}/optimal_trajectory.csv", "r") as file:
         saved_trajectory = file.read()
         print("Trajectoire optimale enregistrée dans le fichier:", saved_trajectory)
 
