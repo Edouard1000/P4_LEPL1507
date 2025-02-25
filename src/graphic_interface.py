@@ -7,10 +7,10 @@ import networkx as nx
 import parse as parse
 import dijkstra as dij
 
-graph, id_to_index = parse.parse_airport_data("../csv/airports.csv", "../csv/pre_existing_routes.csv")
+graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
 # Load data
-airports = pd.read_csv("../csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
-routes = pd.read_csv("../csv/pre_existing_routes.csv")      # Columns: Start, End (Airport IDs)
+airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
+routes = pd.read_csv("./csv/pre_existing_routes.csv")      # Columns: Start, End (Airport IDs)
 
 # Create a Dash app
 app = dash.Dash(__name__)
