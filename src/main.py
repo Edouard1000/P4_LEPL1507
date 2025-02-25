@@ -29,8 +29,7 @@ def main():
     df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False)
     airport_to_connect_list = [[7,4]] # à completer
 
-    
-    C = 5
+    C = 65
 
     # Exécuter la recherche de la meilleure trajectoire
     optimal_trajectory = f.findOptimalTrajectory(network_graph_adj_list, C, output_folder, airport_to_connect_list)
