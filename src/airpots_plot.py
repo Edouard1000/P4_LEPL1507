@@ -59,6 +59,6 @@ def plot_airport_network(airports_file, routes_file, title="Airports and Flight 
     fig.show()
 
 # Example usage
-plot_airport_network('csv/airports.csv', 'csv/pre_existing_routes.csv', title="Global Airport Network")
-plot_airport_network('csv/testFileAirports.csv', 'csv/testFilePreExistingRoutes.csv', title="Test Airport Network")
-plot_airport_network('csv/airports_europe.csv', 'csv/pre_existing_routes_europe.csv', title="New Airport Network")
+#plot_airport_network('csv/airports.csv', 'csv/pre_existing_routes.csv', title="Global Airport Network")
+#plot_airport_network('csv/testFileAirports.csv', 'csv/testFilePreExistingRoutes.csv', title="Test Airport Network")
+#plot_airport_network('csv/airports_europe.csv', 'csv/pre_existing_routes_europe.csv', title="New Airport Network")
