@@ -1,6 +1,7 @@
 import os
 import sys
 from parse import parse_airport_data
+from secondary_parse import parse_cost
 import f as f
 import utility_functions as uf
 import networkx as nx
