@@ -12,8 +12,8 @@ def main():
     """
     Fonction principale pour tester l'algorithme de recherche de trajectoire optimale.
     """
-    airports_file = "./csv/airports_europe.csv"
-    routes_file = "./csv/pre_existing_routes_europe.csv"
+    airports_file = "./csv/airports.csv"
+    routes_file = "./csv/pre_existing_routes.csv"
 
     # Dossier de sortie
     output_folder = "./output_csv"
@@ -33,13 +33,22 @@ def main():
     df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
 
     
-    C = 5
+    C = 1
 
     # Exécuter la recherche de la meilleure trajectoire
     #optimal_trajectory = f.findOptimalTrajectory(network_graph_adj_list, C, output_folder, airport_to_connect_list)
-    P = list(network_graph.edges)
+    #P = list(network_graph.edges)
     
-    temp = [('TUN', 'FRA'), ('AMS', 'FRA')]
+    weights = nx.get_edge_attributes(network_graph, 'distance')
+    P = []
+    for key in weights.keys():
+        P.append((key[0], key[1], weights[key]))
+
+    print(P)
+
+
+    
+    temp = [('AMS', 'FRA'), ('TUN','SVO'), ('LOS', 'DMK'), ('BSB', 'LOS')]
     J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in temp]
 
     optimal_trajectory = gen.genetic_algorithm(P, J, C)
@@ -58,7 +67,8 @@ def main():
     with open(f"{output_folder}/optimal_trajectory.csv", "r") as file:
         saved_trajectory = file.read()
         print("Trajectoire optimale enregistrée dans le fichier:", saved_trajectory)
-    ap.plot_airport_network('csv/airports_europe.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
+    print("here")
+    ap.plot_airport_network('csv/airports.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
 if __name__ == "__main__":
     main()
     

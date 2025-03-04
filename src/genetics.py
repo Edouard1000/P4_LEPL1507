@@ -9,9 +9,9 @@ def evaluate_fitness(graph, E, J, C):
 
     for (At, Al) in J:
         try:
-            total_distance += nx.shortest_path_length(graph, source=At, target=Al, weight='distance')
+            total_distance += nx.shortest_path_length(graph, source=At, target=Al, weight='weight')
         except:
-            total_distance += 10000  # Pénalité pour trajets impossibles
+            total_distance += 1000000  # Pénalité pour trajets impossibles
     return (total_distance / len(J)) + C * len(E)
 
 def initialize_population(P, population_size):
@@ -43,7 +43,7 @@ def distance(start, end):
     return 5
 
 
-def genetic_algorithm(P, J, C, population_size=500, generations=30, mutation_rate=0.1):
+def genetic_algorithm(P, J, C, population_size=500, generations=200, mutation_rate=0.1):
     """Exécute l'algorithme génétique."""
     population = initialize_population(P, population_size)
     
@@ -51,8 +51,8 @@ def genetic_algorithm(P, J, C, population_size=500, generations=30, mutation_rat
         fitnesses = []
         for E in population:
             graph = nx.DiGraph()
-            for start, end in E:
-                graph.add_edge(start, end, weight=distance(start, end))  # Ajout de poids aux arêtes
+            for start, end, weight in E:
+                graph.add_edge(start, end, weight=weight)  # Ajout de poids aux arêtes
             fitnesses.append(evaluate_fitness(graph, E, J, C))
         
         new_population = []
@@ -61,7 +61,13 @@ def genetic_algorithm(P, J, C, population_size=500, generations=30, mutation_rat
             child1, child2 = crossover(parent1, parent2), crossover(parent2, parent1)
             new_population.extend([mutate(child1, P, mutation_rate), mutate(child2, P, mutation_rate)])
         
-        population = sorted(new_population, key=lambda ind: evaluate_fitness(nx.DiGraph(ind), ind, J, C))[:population_size]
+        #population = sorted(new_population, key=lambda ind: evaluate_fitness(nx.DiGraph(ind), ind, J, C))[:population_size]
+        population = sorted(
+            new_population, 
+            key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
+        )[:population_size]
+
+
     
     return population[0]  # Meilleure solution trouvée
 
