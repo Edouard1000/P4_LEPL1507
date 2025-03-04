@@ -27,7 +27,7 @@ def main():
     #print(network_graph_adj_list)
     network_graph_adj_matrix = nx.adjacency_matrix(network_graph, weight= "distance").todense()
     df = pd.DataFrame(network_graph_adj_matrix)
-    df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False)
+    df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
     airport_to_connect_list = [[7,4]] # à completer
 
     
