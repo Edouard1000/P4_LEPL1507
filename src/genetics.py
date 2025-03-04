@@ -1,15 +1,18 @@
 import numpy as np
 import random
 import networkx as nx
+import utility_functions as uf  
+from tqdm import tqdm
 
 def evaluate_fitness(graph, E, J, C):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
     total_distance = 0
+
     for (At, Al) in J:
         try:
             total_distance += nx.shortest_path_length(graph, source=At, target=Al, weight='weight')
-        except nx.NetworkXNoPath:
-            total_distance += 1000  # Pénalité pour trajets impossibles
+        except:
+            total_distance += 1000000  # Pénalité pour trajets impossibles
     return (total_distance / len(J)) + C * len(E)
 
 def initialize_population(P, population_size):
@@ -36,12 +39,22 @@ def mutate(individual, P, mutation_rate=0.1):
             individual.append(random.choice(list(set(P) - set(individual))))  # Ajout
     return individual
 
-def genetic_algorithm(P, J, C, population_size=50, generations=100, mutation_rate=0.1):
+def distance(start, end):
+    """Calcule la distance entre deux aéroports."""
+    return 5
+
+
+def genetic_algorithm(P, J, C, population_size=500, generations=200, mutation_rate=0.1):
     """Exécute l'algorithme génétique."""
     population = initialize_population(P, population_size)
     
-    for _ in range(generations):
-        fitnesses = [evaluate_fitness(nx.DiGraph(E), E, J, C) for E in population]
+    for _ in tqdm(range(generations), desc="Générations"):
+        fitnesses = []
+        for E in population:
+            graph = nx.DiGraph()
+            for start, end, weight in E:
+                graph.add_edge(start, end, weight=weight)  # Ajout de poids aux arêtes
+            fitnesses.append(evaluate_fitness(graph, E, J, C))
         
         new_population = []
         for _ in range(population_size//2):
@@ -49,6 +62,13 @@ def genetic_algorithm(P, J, C, population_size=50, generations=100, mutation_rat
             child1, child2 = crossover(parent1, parent2), crossover(parent2, parent1)
             new_population.extend([mutate(child1, P, mutation_rate), mutate(child2, P, mutation_rate)])
         
-        population = sorted(new_population, key=lambda ind: evaluate_fitness(nx.DiGraph(ind), ind, J, C))[:population_size]
+        #population = sorted(new_population, key=lambda ind: evaluate_fitness(nx.DiGraph(ind), ind, J, C))[:population_size]
+        population = sorted(
+            new_population, 
+            key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
+        )[:population_size]
+
+
     
     return population[0]  # Meilleure solution trouvée
+
