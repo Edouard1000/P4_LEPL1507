@@ -3,6 +3,21 @@ import pandas as pd
 import networkx as nx
 import utility_functions as uf
 import dijkstra as dij
+import parse as prs
+import random
+
+def addlistTofile(list, filename):
+    with open(filename, "a") as file:
+        file.write(str(list[0]))
+        file.write(",")
+        file.write(str(list[1]))
+        file.write("\n")
+
+def clearFile(filename):
+    with open(filename, "w") as file:
+        file.write("ID_start,ID_end\n")
+    
+
 
 def appliquer_masque(dico, masque):
     indices_valides = {i for i, v in enumerate(masque) if v == 1}
@@ -20,6 +35,13 @@ def appliquer_masque(dico, masque):
             current_indices += 1
               
     return new_dico
+
+def translateDicoToList(dico):
+    list = []
+    for key in dico:
+        for el in dico[key]:
+            list.append([prs.indexToId(key),prs.indexToId(el)])
+    return list
         
     
 
@@ -31,15 +53,6 @@ def f(trajectories, network, C, airport_to_connect):
     "prend en argument une liste d'aeroport a connecter ex [[0, 2], [1, 3], [2, 3]]"
 
     "retourne la valeure de f"
-
-    print("\n ############ ")
-    print("argument = ")
-    print(trajectories)
-    print(network)
-    print(C)
-    print(airport_to_connect)
-    print(" ############ \n")
-
 
     N = len(airport_to_connect) # nombre de trajets dans J
     f = 0 # valeur de la fonction objectif
@@ -55,11 +68,9 @@ def f(trajectories, network, C, airport_to_connect):
             ends[start] = []
         ends[start].append(airport_to_connect[i][1]) # on ajoute l'aeroport d'arrivee a la liste des aeroports d'arrivee de l'aeroport de depart
 
-    print("\n ############ ")
-    print("network = ", network)
-    print("starts = ", starts)
-    print("ends = ", ends)
-    print(" ############ \n")
+    # print("starts = ", starts)
+    # print("ends = ", ends)
+    # print("network = ", network)
 
     MaximMatrix = dij.dijkstra_adj_list(network, starts, ends)[0]
     
@@ -68,6 +79,8 @@ def f(trajectories, network, C, airport_to_connect):
             f += MaximMatrix[key][el]
     f /= N
     f += C * sum(trajectories)
+
+    print("f = ", f)
     return f
 
 def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
@@ -86,19 +99,28 @@ def findOptimalTrajectory(network,C , output_folder, airport_to_connect_list):
 
     trajectory = [1 for _ in range(0, sizeOfnetwork)]
     current_f_value = f(trajectory, network, C, airport_to_connect_list)
-    
     update = True
     while(update):
         update = False
-        for neigh in generateNeighMatrix(trajectory):
+        for neigh in generateNeighBourhood(trajectory, 1):
             new_f_value = f(neigh, network, C, airport_to_connect_list)
             if new_f_value < current_f_value:
                 current_f_value = new_f_value
                 trajectory = neigh
                 update = True
 
-    with open(f"{output_folder}/optimal_trajectory.txt", "w") as file:
-        file.write(",".join(map(str, trajectory)))
+    
+    print("la trajectoire optimale est : ", appliquer_masque(network, trajectory))
+    
+    l = translateDicoToList(appliquer_masque(network, trajectory))
+
+    print(l)
+    
+
+    clearFile(output_folder + "/optimal_trajectory.csv")
+    for el in l:
+        addlistTofile(el, output_folder + "/optimal_trajectory.csv")
+    print("le fichier à été enregistré à l'adresse : ", output_folder + "/optimal_trajectory.csv")
 
     return trajectory
 
@@ -124,7 +146,66 @@ def IliasgenerateNeighMatrix(array):
             neighList.append(array.copy())
             array[i] = 0
     return neighList
-    
+
+
+def generateNeighBourhood(array, depth):
+    def hashArray(array):
+        return "".join(map(str, array))
+    neighList = []
+    visited = {}
+    queue = Queue()
+    queue.push((array, 0))
+    while not queue.empty():
+        currentArray, currentDepth = queue.pop()
+        for neigh in generateNeighMatrix(currentArray):
+            if hashArray(neigh) not in visited:
+                visited[hashArray(neigh)] = []
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+            if hashArray(neigh) in visited and (neigh not in visited[hashArray(neigh)]):
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+    return neighList
+
+def IlliasgenerateNeighBourhood(array, depth):
+    def hashArray(array):
+        return "".join(map(str, array))
+    neighList = []
+    visited = {}
+    queue = Queue()
+    queue.push((array, 0))
+    while not queue.empty():
+        currentArray, currentDepth = queue.pop()
+        for neigh in IliasgenerateNeighMatrix(currentArray):
+            if hashArray(neigh) not in visited:
+                visited[hashArray(neigh)] = []
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+            if hashArray(neigh) in visited and (neigh not in visited[hashArray(neigh)]):
+                visited[hashArray(neigh)].append(neigh)
+                neighList.append(neigh)
+                if currentDepth < depth:
+                    queue.push((neigh, currentDepth + 1))
+    return neighList
+
+
+
+
+class Queue:
+    def __init__(self):
+        self.queue = []
+    def push(self, element):
+        self.queue.append(element)
+    def pop(self):
+        return self.queue.pop(0)
+    def empty(self):
+        return len(self.queue) == 0
         
 
 
@@ -136,6 +217,17 @@ def IliasgenerateNeighMatrix(array):
 # resultat = appliquer_masque(dico, masque)
 # print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
 
+def findOptimalTrajectoryOptimised(network,C , output_folder, airport_to_connect_list, depth):
+    "prend en argument une liste"
+    "prend en argument un cout C"
+    "prend en argument un dossier de sortie"
+    "prend en argument une liste d'aeroport a connecter"
+    "prend en argument une profondeur de recherche"
+    "prend en argument la profondeur de recherche"
+    
+    "retourne la trajectoire optimale (liste de boolean)"
+
+    return 0;
 
 
 

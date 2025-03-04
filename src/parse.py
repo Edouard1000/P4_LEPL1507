@@ -5,6 +5,8 @@ import pandas as pd
 import networkx as nx
 import utility_functions as uf  
 
+id_to_index = {}
+
 def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pre_existing_routes.csv"):
     """
     Parse les fichiers CSV des aéroports et des routes pour construire un graphe dirigé avec indexation des sommets.
@@ -22,9 +24,6 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
 
     # Création d'un graphe dirigé
     G = nx.DiGraph()
-
-    # Création d'un mapping ID -> Index
-    id_to_index = {}
 
     # Ajouter les aéroports comme nœuds avec leurs indices
     for i, (_, row) in enumerate(airports_df.iterrows()):
@@ -49,11 +48,17 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
 
     return G, id_to_index
 
+def indexToId(index):
+    for key in id_to_index:
+        if id_to_index[key] == index:
+            return key
+    return None
+
 
 # Exemple d'utilisation
-network_graph, id_to_index = parse_airport_data()
+# network_graph, id_to_index = parse_airport_data()
 
 
-network_graph_test, id_to_index = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
+# network_graph_test, id_to_index = parse_airport_data(airports_file = "./csv/testFileAirports.csv", routes_file = "./csv/testFilePreExistingRoutes.csv")  
 
 # Vérification : nombre de nœuds et d'arêtes du graphe de test
