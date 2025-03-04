@@ -74,6 +74,7 @@ Contient les documents csv remis en sortie
 ---
 
 # src
+Ce dossier contient tous les documents source du code utilisés dans le fichier principal main.py
 
 ### 1. `airpots_plot.py`
 Affiche le réseau des aéroports et des routes aériennes.
@@ -154,6 +155,37 @@ Contient des fonctions utilitaires, notamment pour le calcul des distances.
 
 
 # tests
+Ce dossier contient plusieurs fichiers de test permettant de valider les fonctionnalités du projet.
+
+## Tests de l'algorithme de Dijkstra
+
+### 1. `dijkstra_test.py`
+- **Description :** Ce fichier teste différentes implémentations de l'algorithme de Dijkstra sur un graphe généré aléatoirement.
+- **Fonctions principales :**
+  - `generate_graph(num_nodes, prob_edge, num_starts, num_ends_per_start)`: Génère un graphe aléatoire.
+  - `dijkstra_tests(num_nodes, prob_edge, num_starts, num_ends_per_start)`: Compare différentes implémentations de Dijkstra et mesure leur performance.
+  - Vérifie que les résultats de l'algorithme sont corrects à l'aide d'assertions.
+
+---
+
+## Test sur un échantillon réduit
+
+### 2. `testOnSmallSample.py`
+- **Description :** Exécute l'algorithme d'optimisation sur un petit ensemble de données.
+- **Fonction principale :**
+  - `testOnSmallSample(airports_file, routes_file, airport_to_connect_list, C)`: Charge un petit réseau aérien et exécute l'algorithme de recherche de la trajectoire optimale.
+  - Génère un graphe optimisé et affiche la carte mise à jour.
+
+---
+
+## Tests unitaires
+
+### 3. `unittest.py`
+- **Description :** Contient des tests unitaires pour valider des fonctionnalités du projet.
+- **Fonctions principales :**
+  - `distance_test()`: Vérifie le calcul des distances entre plusieurs points géographiques.
+  - `dijstra_test()`: Vérifie que l'algorithme de Dijkstra retourne la distance correcte.
+  - Affiche un message de validation si tous les tests passent.
 
 ---
 
