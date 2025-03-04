@@ -100,9 +100,3 @@ def dist_to_time(distance_km, cruise_speed_kmh=900, extra_time=0.75):
     cruise_time = distance_km / cruise_speed_kmh  # Time spent cruising
     total_time = cruise_time + extra_time  # Adding takeoff & landing time
     return total_time
-
-
-cost_graph, id_to_index2 = parse_cost()
-network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
-df_price = pd.DataFrame(network_graph_adj_matrix_price)
-df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False)
