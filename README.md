@@ -1,18 +1,79 @@
-code : contains files relative to the parsing of the data and utility functions (distance, dijkstra,...)
+README
 
-csv : contains the csv files about the airports and routes data
+# csv
+Contient les documents csv à prendre en entrée
 
-tests : contains tests files for various uses
+## Fichiers des Aéroports
 
-Run : "python main.py" to find the optimal routes to keep
+### 1. `airports.csv`
+- **Description :** Contient les informations de 75 aéroports.
+- **Colonnes :**
+  - `name` : Nom de l'aéroport.
+  - `city` : Ville où se situe l'aéroport.
+  - `country` : Pays de l'aéroport.
+  - `ID` : Identifiant unique de l'aéroport.
+  - `extended_ID` : Identifiant étendu.
+  - `latitude` : Latitude géographique.
+  - `longitude` : Longitude géographique.
 
-src :
+### 2. `airports_europe.csv`
+- **Description :** Contient les informations de 12 aéroports européens.
+- **Colonnes :** Identiques à `airports.csv`.
 
-# README - Description du Code
+---
 
-Ce projet contient plusieurs fichiers Python qui implémentent des algorithmes et outils pour le traitement et la visualisation des réseaux aériens.
+## Fichiers des Routes
 
-## Fichiers Principaux
+### 3. `pre_existing_routes.csv`
+- **Description :** Contient 1791 routes aériennes préexistantes.
+- **Colonnes :**
+  - `ID_start` : Identifiant de l'aéroport de départ.
+  - `ID_end` : Identifiant de l'aéroport d'arrivée.
+
+### 4. `pre_existing_routes_europe.csv`
+- **Description :** Contient 50 routes aériennes en Europe.
+- **Colonnes :** Identiques à `pre_existing_routes.csv`.
+
+---
+
+## Fichiers de Test
+
+### 5. `testFileAirports.csv`
+- **Description :** Contient 9 aéroports pour les tests.
+- **Colonnes :** Identiques à `airports.csv`.
+
+### 6. `testFilePreExistingRoutes.csv`
+- **Description :** Contient 5 routes aériennes pour les tests.
+- **Colonnes :** Identiques à `pre_existing_routes.csv`.
+
+---
+
+
+# output_csv
+Contient les documents csv remis en sortie
+
+## Fichiers de Matrice
+
+### 1. `network_graph_adj_matrix.csv`
+- **Description :** Matrice d'adjacence représentant les distances entre 12 aéroports dans le réseau.
+- **Colonnes :**
+  - Chaque colonne et ligne représente un aéroport (indices de 0 à 11).
+  - Les valeurs indiquent la distance entre les aéroports correspondants.
+
+---
+
+## Fichiers de Trajectoire Optimale
+
+### 2. `optimal_trajectory.csv`
+- **Description :** Contient les connexions optimisées entre les aéroports après application de l'algorithme de recherche.
+- **Colonnes :**
+  - `ID_start` : Identifiant de l'aéroport de départ.
+  - `ID_end` : Identifiant de l'aéroport d'arrivée.
+- **Nombre de trajets optimisés :** 3
+
+---
+
+# src
 
 ### 1. `airpots_plot.py`
 Affiche le réseau des aéroports et des routes aériennes.
@@ -92,5 +153,16 @@ Contient des fonctions utilitaires, notamment pour le calcul des distances.
   - Calcule la distance terrestre entre deux points en utilisant la géodésie.
 
 
-Ce README documente les principales fonctionnalités et fichiers du projet. 🚀
+# tests
 
+---
+
+# comments
+
+code : contains files relative to the parsing of the data and utility functions (distance, dijkstra,...)
+
+csv : contains the csv files about the airports and routes data
+
+tests : contains tests files for various uses
+
+Run : "python main.py" to find the optimal routes to keep
