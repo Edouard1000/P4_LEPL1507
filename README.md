@@ -12,10 +12,6 @@ src :
 
 Ce projet contient plusieurs fichiers Python qui implémentent des algorithmes et outils pour le traitement et la visualisation des réseaux aériens.
 
-## Table des Matières
-- [Fichiers Principaux](#fichiers-principaux)
-- [Description des Fonctions](#description-des-fonctions)
-
 ## Fichiers Principaux
 
 ### 1. `airpots_plot.py`
@@ -95,13 +91,6 @@ Contient des fonctions utilitaires, notamment pour le calcul des distances.
 - **`earth_distance(lat1, lon1, lat2, lon2)`**
   - Calcule la distance terrestre entre deux points en utilisant la géodésie.
 
----
-
-## Utilisation
-Exécutez le fichier `main.py` pour générer et visualiser le réseau optimisé.
-```bash
-python main.py
-```
 
 Ce README documente les principales fonctionnalités et fichiers du projet. 🚀
 
