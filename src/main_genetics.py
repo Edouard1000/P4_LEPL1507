@@ -44,12 +44,12 @@ def main():
     for key in weights.keys():
         P.append((key[0], key[1], weights[key]))
 
-    print(P)
 
 
     
     temp = [('AMS', 'FRA'), ('TUN','SVO'), ('LOS', 'DMK'), ('BSB', 'LOS')]
     J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in temp]
+    print(J)
 
     optimal_trajectory = gen.genetic_algorithm(P, J, C)
 
