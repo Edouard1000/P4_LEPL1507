@@ -96,14 +96,14 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
     population = initialize_population(P, population_size)
     evolution = []
     for _ in tqdm(range(generations), desc="Générations"):
-        print("\n")
+        # print("\n")
         fitnesses = []
         for E in population:
             graph = nx.DiGraph()
             for start, end, weight in E:
                 graph.add_edge(start, end, weight=weight)  # Ajout de poids aux arêtes
             fitnesses.append(evaluate_fitness(graph, E, J, C))
-        print(min(fitnesses))
+        # print(min(fitnesses))
         evolution.append(min(fitnesses))
         
         new_population = []
@@ -118,13 +118,5 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
         )[:population_size]
 
-
-    import matplotlib.pyplot as plt
-
-    plt.plot(evolution)
-    plt.xlabel('Generations')
-    plt.ylabel('Fitness')
-    plt.title('Evolution of Fitness over Generations')
-    plt.show()
     return population[0], evolution  # Meilleure solution trouvée
 
