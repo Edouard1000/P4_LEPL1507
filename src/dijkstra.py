@@ -88,7 +88,24 @@ def optimized_dijkstra(graph, starts, endss):
     return distances, paths
 
 dist_matrix  = pd.read_csv('./output_csv/network_graph_adj_matrix.csv', header=None).values
-def dijkstra_adj_list(adj_list, starts, endss): 
+def dijkstra_adj_list(adj_list, starts, endss, distances=None, paths=None, deleted_edge=None): 
+    '''
+    Parameters
+    ----------
+    adj_list : dict
+        The adjacency list of the graph.
+    starts : list of int
+        List of starting node indices.
+    endss : list of list of int
+        List of lists, where each sublist contains end node indices corresponding to each start node.
+
+    Returns
+    -------
+    distances : list of list of float
+        A 2D list where the element at [i][j] represents the shortest distance from node i to node j.
+    paths : list of list of list of int
+        A 3D list where the element at [i][j] represents the shortest path from node i to node j.
+    '''
     n = len(dist_matrix) # Number of nodes
     distances = [None] * n # Initialize the distance matrix
     paths = [None] * n # Initialize the path matrix
