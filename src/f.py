@@ -76,7 +76,7 @@ def f(trajectories, network, C, airport_to_connect, fast = False, trajectories_p
             if u == doublet[0] : # si u est le départ
                 if v == paths[u][0] : # si v est le suivant
                     # on recalcule dijkstra pour les aretes modifiées
-                paths[doublet[0]][doublet[1]]
+                    paths[doublet[0]][doublet[1]]
             
         
 
