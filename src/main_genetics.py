@@ -34,7 +34,7 @@ def main():
     df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
 
     
-    C = 30
+    C = 100
 
     # Exécuter la recherche de la meilleure trajectoire
     #optimal_trajectory = f.findOptimalTrajectory(network_graph_adj_list, C, output_folder, airport_to_connect_list)
@@ -57,9 +57,9 @@ def main():
     for _ in range(30):
         airport1, airport2 = random.sample(list_airports, 2)
         J.append((airport1, airport2))
-    print(J)
+    print(list(map(lambda x: (index_to_id[x[0]], index_to_id[x[1]]), J)))
 
-    optimal_trajectory = gen.genetic_algorithm(P, J, C)
+    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C)
 
     # Affichage des résultats
     print("\n--- Résultat de l'algorithme ---")

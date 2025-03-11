@@ -119,6 +119,12 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
         )[:population_size]
 
 
-    
-    return population[0]  # Meilleure solution trouvée
+    import matplotlib.pyplot as plt
+
+    plt.plot(evolution)
+    plt.xlabel('Generations')
+    plt.ylabel('Fitness')
+    plt.title('Evolution of Fitness over Generations')
+    plt.show()
+    return population[0], evolution  # Meilleure solution trouvée
 
