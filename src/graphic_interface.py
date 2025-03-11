@@ -1,6 +1,7 @@
+import webbrowser
 import dash
 from dash import dcc, html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import networkx as nx
 import pandas as pd
 import plotly.graph_objects as go
@@ -14,13 +15,13 @@ cost_graph, id_to_index2 = parse2.parse_cost()
 # Load data
 airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
 
-network_graph_adj_matrix = nx.adjacency_matrix(graph, weight= "distance").todense()
-df = pd.DataFrame(network_graph_adj_matrix)
-df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
+# network_graph_adj_matrix = nx.adjacency_matrix(graph, weight= "distance").todense()
+# df = pd.DataFrame(network_graph_adj_matrix)
+# df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
 
-network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
-df_price = pd.DataFrame(network_graph_adj_matrix_price)
-df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False)
+# network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
+# df_price = pd.DataFrame(network_graph_adj_matrix_price)
+# df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False)
 
 cost_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix_costs.csv", header=None).values
 dist_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix.csv", header=None).values
@@ -31,19 +32,18 @@ waiting_time.columns = waiting_time.iloc[0]  # Set the first row as the header
 waiting_time = waiting_time.drop(0).reset_index(drop=True)
 waiting_time['idle_time'] = waiting_time['idle_time'].astype(float)
 
-
-print("Done parsing data\n")
+style_sub={'fontSize': '24px', 'fontWeight': 'bold', 'color': 'white', 'fontFamily': 'Arial, sans-serif'}
 # Create a Dash app
 app = dash.Dash(__name__)
 
 # Layout
 app.layout = html.Div([
-    html.H1("Airport Routes Visualization"),
+    html.H1("Airport Routes Visualization", style={'textAlign': 'center', 'fontFamily': 'Arial, sans-serif'}),
 
     # Dropdowns Section (Blue Background)
     html.Div([
         html.Div([
-            html.Label("Select a departure Airport", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white'}),
+            html.Label("Departure Airport", style=style_sub),
             dcc.Dropdown(
                 id="airport-dropdown1",
                 options=[{"label": name, "value": airport_id} for name, airport_id in zip(airports["name"], airports["ID"])],
@@ -53,8 +53,14 @@ app.layout = html.Div([
             )
         ], style={'width': '30%', 'display': 'inline-block'}),
 
+        html.Button(html.Img(src="./assets/fleche_gauche_droite.png", style={'width': '40px', 'height': '40px'}), id="swap-button", n_clicks=0, style={
+            'width': '3%', 'height': '40px', 'margin': '30px 10px',
+            'fontSize': '20px', 'fontWeight': 'bold', 'cursor': 'pointer',
+            'borderRadius': '10px', 'border': 'none', 'backgroundColor': 'white'
+        }),
+
         html.Div([
-            html.Label("Select a destination Airport", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white'}),
+            html.Label("Destination Airport", style=style_sub),
             dcc.Dropdown(
                 id="airport-dropdown2",
                 options=[{"label": name, "value": airport_id} for name, airport_id in zip(airports["name"], airports["ID"])],
@@ -65,7 +71,7 @@ app.layout = html.Div([
         ], style={'width': '30%', 'display': 'inline-block'}),
 
         html.Div([
-            html.Label("Select your flight criterium to optimize", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white'}),
+            html.Label("Flight criterium to optimize", style=style_sub),
             dcc.Dropdown(
                 id="flight-criterium",
                 options=[
@@ -91,17 +97,29 @@ app.layout = html.Div([
     html.Div([
         # Sidebar (Blue Background)
         html.Div([
-            html.Label("Flight Parameters", style={'fontSize': '20px', 'fontWeight': 'bold', 'color': 'white', 'textAlign': 'center'}),
+            html.Label("Flight Parameters", style=style_sub),
             html.Div([
-                html.Label("Distance (km):", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white'}),
-                html.Div(id="distance", style={'fontSize': '16px', 'color': 'white'}),
-                
-                html.Label("Time (hours):", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white', 'marginTop': '10px'}),
-                html.Div(id="time", style={'fontSize': '16px', 'color': 'white'}),
-
-                html.Label("Cost ($):", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white', 'marginTop': '10px'}),
-                html.Div(id="cost", style={'fontSize': '16px', 'color': 'white'}),
-            ], style={'padding': '10px'}),  # Internal padding
+                # Distance
+                html.Div([
+                    html.Img(src="./assets/distance.png", style={'width': '30px', 'height': '30px', 'marginRight': '10px'}),
+                    html.Label("Distance (km):", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white', 'flexGrow': '1'}),
+                    html.Div(id="distance", style={'fontSize': '16px', 'color': 'white'})
+                ], style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '10px'}),
+        
+                # Time
+                html.Div([
+                    html.Img(src="./assets/prime-time.png", style={'width': '30px', 'height': '30px', 'marginRight': '10px'}),
+                    html.Label("Time (hours):", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white', 'flexGrow': '1'}),
+                    html.Div(id="time", style={'fontSize': '16px', 'color': 'white'})
+                ], style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '10px'}),
+        
+                # Cost
+                html.Div([
+                    html.Img(src="./assets/etiquette-de-prix.png", style={'width': '30px', 'height': '30px', 'marginRight': '10px'}),
+                    html.Label("Cost ($):", style={'fontSize': '18px', 'fontWeight': 'bold', 'color': 'white', 'flexGrow': '1'}),
+                    html.Div(id="cost", style={'fontSize': '16px', 'color': 'white'})
+                ], style={'display': 'flex', 'alignItems': 'center', 'marginBottom': '10px'}),
+            ], style={'padding': '10px'}),
 
         ], style={  # Sidebar styles
             'backgroundColor': '#0056b3',
@@ -137,6 +155,8 @@ def update_best_route(start, end, criterium):
 
     start_ind = id_to_index[start]
     end_ind = id_to_index[end]
+    source_airport = airports[airports["ID"] == start].iloc[0]
+    dest_airport = airports[airports["ID"] == end].iloc[0]
     distances = None
     paths = None
     best_path = None
@@ -144,6 +164,10 @@ def update_best_route(start, end, criterium):
     dist = 0
     time = 0
 
+    if start_ind == end_ind:
+        return update_layout(fig, "Start and destination airports are the same"), 0, 0, 0
+
+    # Calculate the best path based on the selected criterium
     if criterium == "distance":
         distances, paths = dij.optimized_dijkstra(graph, [start_ind], [[end_ind]])
         best_path = paths[start_ind][end_ind]
@@ -175,13 +199,27 @@ def update_best_route(start, end, criterium):
             time += dist_to_time(dist_matrix[best_path[i]][next_node])+ waiting_time[waiting_time["ID"] == node_id]["idle_time"].iloc[0]/60
         time -= waiting_time[waiting_time["ID"] == end]["idle_time"].iloc[0]/60
     if best_path is None:
-        return update_layout(fig, f"No existing route from {start} to {end}"), 0
-
-    source_airport = airports[airports["ID"] == start].iloc[0]
-    dest_airport = airports[airports["ID"] == end].iloc[0]
+        return update_layout(fig, f"No existing route from {start} to {end}"), 0, 0, 0
     
-    current = source_airport
+    plot_path(fig, best_path, airports, source_airport)
+         
+    update_layout(fig, f"Routes from {source_airport['name']} to {dest_airport['name']}")
+    return fig, round(dist, 2), round(time, 2) , round(cost, 2)
 
+@app.callback(
+    [Output("airport-dropdown1", "value"),
+     Output("airport-dropdown2", "value")],
+    Input("swap-button", "n_clicks"),
+    [State("airport-dropdown1", "value"),
+     State("airport-dropdown2", "value")]
+)
+def swap_airports(n_clicks, dep_value, arr_value):
+    if n_clicks % 2+1 == 1:  # Swap only on odd clicks
+        return arr_value, dep_value
+    return dep_value, arr_value  # No change on even clicks
+
+def plot_path(fig, best_path, airports, start):
+    current = start
     for i, next_node in enumerate(best_path[1:]):
         if (i != len(best_path)-1):
             next = airports[airports["ID"] == graph.nodes[next_node]["ID"]].iloc[0]
@@ -192,9 +230,6 @@ def update_best_route(start, end, criterium):
             fig = add_node(fig, current, "intermediate airport")  
         current = next
     fig = add_node(fig, next, "dest airport", color="red")
-        
-    return update_layout(fig, f"Routes from {source_airport['name']} to {dest_airport['name']}"), dist, time, cost
-# Run app
 
 def add_node(fig, airport, name, color="blue"):
     fig.add_trace(go.Scattergeo(
@@ -203,7 +238,8 @@ def add_node(fig, airport, name, color="blue"):
         text=f"{airport['name']}",
         mode="markers",
         marker=dict(size=8, color=color),
-        name=name
+        name=name,
+        showlegend=False  # Do not show in legend
     ))
     return fig
 
@@ -213,17 +249,18 @@ def add_trace(fig, current, next, color="blue"):
         lat=[current["latitude"], next["latitude"]],
         mode="lines+markers",
         line=dict(width=1, color=color),
+        showlegend=False  # Do not show in legend
     ))
     return fig
 
 def update_layout(fig, title):
     fig.update_layout(
-        title=dict(
-            text=title,
-            font=dict(size=20, family="Arial, sans-serif", color="black"),
-            x=0.5,  # Center the title
-            y=0.95  # Move it slightly higher for better spacing
-        ),
+        #title=dict(
+        #    text=title,
+        #    font=dict(size=25, family="Arial, sans-serif", color="black"),
+        #    x=0.5,  # Center the title
+        #    y=0.95  # Move it slightly higher for better spacing
+        #),
         geo=dict(
             scope="world",
             projection=dict(type="natural earth"),  # More natural-looking projection
@@ -241,4 +278,6 @@ def update_layout(fig, title):
     )
     return fig
 if __name__ == "__main__":
+    webbrowser.open("http://127.0.0.1:8050/")  # Open the Dash app in the browser
     app.run_server(debug=True)
+    

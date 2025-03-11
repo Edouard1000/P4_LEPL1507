@@ -105,6 +105,6 @@ def dist_to_time(distance_km, cruise_speed_kmh=900, extra_time=0.75):
     if distance_km <= 0:
         return 0  # No travel if distance is zero or invalid
 
-    cruise_time = distance_km / cruise_speed_kmh  # Time spent cruising
-    total_time = cruise_time + extra_time  # Adding takeoff & landing time
+    cruise_time = distance_km / cruise_speed_kmh 
+    total_time = cruise_time + extra_time 
     return total_time
