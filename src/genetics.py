@@ -14,13 +14,14 @@ from tqdm import tqdm
 def evaluate_fitness(graph, E, J, C):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
     total_distance = 0
+    punition = 0
 
     for (At, Al) in J:
         try:
             total_distance += nx.shortest_path_length(graph, source=At, target=Al, weight='weight')
         except:
-            total_distance += 1000000  # Pénalité pour trajets impossibles
-    return (total_distance / len(J)) + C * len(E)
+            punition += 1000000  # Pénalité pour trajets impossibles
+    return punition + (total_distance / len(J)) + C * len(E)
 
 """
     :param P: Liste des connexions possibles sous forme de tuples (start, end, weight).
@@ -93,8 +94,9 @@ def distance(start, end):
 def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1):
     """Exécute l'algorithme génétique."""
     population = initialize_population(P, population_size)
-    
+    evolution = []
     for _ in tqdm(range(generations), desc="Générations"):
+        print("\n")
         fitnesses = []
         for E in population:
             graph = nx.DiGraph()
@@ -102,6 +104,7 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
                 graph.add_edge(start, end, weight=weight)  # Ajout de poids aux arêtes
             fitnesses.append(evaluate_fitness(graph, E, J, C))
         print(min(fitnesses))
+        evolution.append(min(fitnesses))
         
         new_population = []
         for _ in range(population_size//2):

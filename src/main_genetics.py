@@ -49,15 +49,15 @@ def main():
 
     
     list_airports = list(network_graph.nodes)
-    temp = [('AMS', 'JFK')]
-    J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in temp]
+    #temp = [('AMS', 'FRA'), ('TUN','SVO'), ('LOS', 'DMK'), ('BSB', 'LOS')]
+    #J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in temp]
     random.seed(42)  # For reproducibility
 
-    #J = []
-    #for _ in range(30):
-    #    airport1, airport2 = random.sample(list_airports, 2)
-    #    J.append((airport1, airport2))
-    #print(J)
+    J = []
+    for _ in range(30):
+        airport1, airport2 = random.sample(list_airports, 2)
+        J.append((airport1, airport2))
+    print(J)
 
     optimal_trajectory = gen.genetic_algorithm(P, J, C)
 
