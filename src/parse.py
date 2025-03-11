@@ -44,7 +44,7 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
             start_idx, end_idx = id_to_index[start_id], id_to_index[end_id]
             x = (G.nodes[start_idx]["latitude"], G.nodes[start_idx]["longitude"])
             y = (G.nodes[end_idx]["latitude"], G.nodes[end_idx]["longitude"])
-            G.add_edge(start_idx, end_idx, distance=uf.earth_distance(*x, *y))
+            G.add_edge(start_idx, end_idx, distance=uf.euclidean_distance(*x, *y))
 
     return G, id_to_index
 
