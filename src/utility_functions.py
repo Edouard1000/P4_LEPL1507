@@ -27,7 +27,7 @@ def euclidean_distance(x, y):
     d = 2 * math.atan2(math.sqrt(c), math.sqrt(1-c))
     return RAYON_TERRESTRE * d
 
-def earth_distance(lat1, lon1, lat2, lon2):
+def earth_distance(lat1, lon1, lat2, lon2): #à pas utiliser 
     g = geod.Inverse(lat1, lon1, lat2, lon2)
     return g['s12'] / 1000  # Conversion de la distance en kilomètres
 
