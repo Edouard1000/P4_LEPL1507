@@ -2,6 +2,7 @@ import numpy as np
 import random
 import networkx as nx
 import utility_functions as uf  
+from tqdm import tqdm
 
 def evaluate_fitness(graph, E, J, C):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
@@ -47,7 +48,7 @@ def genetic_algorithm(P, J, C, population_size=500, generations=200, mutation_ra
     """Exécute l'algorithme génétique."""
     population = initialize_population(P, population_size)
     
-    for _ in range(generations):
+    for _ in tqdm(range(generations), desc="Générations"):
         fitnesses = []
         for E in population:
             graph = nx.DiGraph()
