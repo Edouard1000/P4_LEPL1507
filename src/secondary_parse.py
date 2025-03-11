@@ -6,7 +6,7 @@ import pandas as pd
 import networkx as nx
 import utility_functions as uf  
 
-def parse_cost(airports_file="./csv/airports.csv", routes_file="./secondary_csv/pre_existing_routes_costs.csv"):
+def parse_cost(airports_file="./csv/airports.csv", routes_file="./csv/pre_existing_routes.csv"):
     """
     Parse les fichiers CSV des aéroports et des routes pour construire un graphe dirigé avec indexation des sommets.
 
@@ -20,6 +20,7 @@ def parse_cost(airports_file="./csv/airports.csv", routes_file="./secondary_csv/
     # Charger les fichiers CSV
     airports_df = pd.read_csv(airports_file)
     routes_df = pd.read_csv(routes_file)
+    costs_df = pd.read_csv("./secondary_csv/prices.csv")
 
     # Création d'un graphe dirigé
     G = nx.DiGraph()
@@ -41,14 +42,18 @@ def parse_cost(airports_file="./csv/airports.csv", routes_file="./secondary_csv/
 
     # Ajouter les routes existantes comme arêtes
     for _, row in routes_df.iterrows():
-        start_id, end_id, cost = row["ID_start"], row["ID_end"], row["cost"]
+        cost = costs_df.loc[costs_df['ID_start'] == row["ID_start"]].loc[costs_df['ID_end'] == row["ID_end"]].iloc[0]["price_tag"]
+        start_id, end_id = row["ID_start"], row["ID_end"]
         if start_id in id_to_index and end_id in id_to_index:
             start_idx, end_idx = id_to_index[start_id], id_to_index[end_id]
             G.add_edge(start_idx, end_idx, distance=cost)
 
     return G, id_to_index
 
-def dijkstra_time(adj_list, starts, endss, stopover, time_matrix):
+
+
+def dijkstra_time(adj_list, starts, endss, time_matrix, idle_time, graph):
+
     n = len(time_matrix)
     times = [None] * n
     paths = [None] * n
@@ -71,7 +76,10 @@ def dijkstra_time(adj_list, starts, endss, stopover, time_matrix):
             for neighbor in adj_list[current_node]:
                 new_time = dist_to_time(time_matrix[current_node][neighbor])
                 if new_time > 0 and not visited[neighbor]:
-                    additional_time = stopover if current_node != start else 0
+
+                    id = graph.nodes[current_node]['ID']
+                    additional_time = idle_time[idle_time['ID']==id]["idle_time"].iloc[0]/60 if current_node != start else 0
+
                     time = current_time + new_time + additional_time
                     if time < times[start][neighbor]:
                         times[start][neighbor] = time
@@ -100,9 +108,3 @@ def dist_to_time(distance_km, cruise_speed_kmh=900, extra_time=0.75):
     cruise_time = distance_km / cruise_speed_kmh  # Time spent cruising
     total_time = cruise_time + extra_time  # Adding takeoff & landing time
     return total_time
-
-
-cost_graph, id_to_index2 = parse_cost()
-network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
-df_price = pd.DataFrame(network_graph_adj_matrix_price)
-df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False)

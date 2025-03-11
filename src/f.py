@@ -114,8 +114,7 @@ def findOptimalTrajectory(network, C, output_folder, airport_to_connect_list):
     "prend en argument un dictionnaire d'adjacence"
     "prend en argument un cout C"
     "prend en argument un dossier de sortie"
-    "prend en argument une liste d'aeroports a connecter"
-    "prend en argument une methode : 'only sub', 'Ilias' "
+    "prend en argument une liste d'aeroport a connecter"
 
     "retourne la trajectoire optimale (liste de boolean)"
     
@@ -125,12 +124,12 @@ def findOptimalTrajectory(network, C, output_folder, airport_to_connect_list):
         for _ in network[key]:
             sizeOfnetwork +=1
 
-    trajectory = [1 for _ in range(0, sizeOfnetwork)] # on initialise la trajectoire avec toutes les aretes selectionnees
-    current_f_value = f(trajectory, network, C, airport_to_connect_list) # on calcule la valeur de f pour la trajectoire initiale
-    update = True # on initialise la variable update a True pour entrer dans la boucle while
-    while(update): # tant qu'on a une mise a jour de la trajectoire
-        update = False # on initialise update a False
-        for neigh in generateNeighBourhood(trajectory, 1): # on genere les voisins de la trajectoire actuelle avec une profondeur de 1 
+    trajectory = [1 for _ in range(0, sizeOfnetwork)]
+    current_f_value = f(trajectory, network, C, airport_to_connect_list)
+    update = True
+    while(update):
+        update = False
+        for neigh in IlliasgenerateNeighBourhood(trajectory, 1):
             new_f_value = f(neigh, network, C, airport_to_connect_list)
             if new_f_value < current_f_value:
                 current_f_value = new_f_value
@@ -142,6 +141,7 @@ def findOptimalTrajectory(network, C, output_folder, airport_to_connect_list):
     
     l = translateDicoToList(appliquer_masque(network, trajectory))
 
+    print(" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! l =" )
     print(l)
     
 
@@ -249,27 +249,86 @@ class Queue:
         
 
 
-# print(generateNeighMatrix([1,0,1,1,1,1,1,1,1,1]))
+def generateRandomNumber(n):
+    return random.randint(0, n)
 
-# dico = {0: [1, 2], 1: [0, 2], 2: [0, 1, 3], 3: [2]}
-# masque = [0, 0, 0, 1, 1, 1, 0, 1]
+def generateRandomNeigh(array):
+    neigh = array.copy()
+    index = generateRandomNumber(len(array) - 1)
+    if(neigh[index] == 0):
+        neigh[index] = 1
+    else:
+        neigh[index] = 0
+    return neigh
 
-# resultat = appliquer_masque(dico, masque)
-# print(resultat)  # {1: [2], 2: [0, 1], 3: [2]}
 
-def findOptimalTrajectoryOptimised(network,C , output_folder, airport_to_connect_list, depth):
-    "prend en argument une liste"
+def findOptimalTrajectoryWithHeat(network, C, output_folder, airport_to_connect_list, initial_temperature, cooling_rate):
+    "prend en argument une liste d'ajacence"
     "prend en argument un cout C"
     "prend en argument un dossier de sortie"
     "prend en argument une liste d'aeroport a connecter"
     "prend en argument une profondeur de recherche"
-    "prend en argument la profondeur de recherche"
+    "prend en argument une température initiale"
+    "prend en argument un taux de refroidissement"
     
     "retourne la trajectoire optimale (liste de boolean)"
 
-    return 0;
+    def acceptance_probability(old_cost, new_cost, temperature):
+        if new_cost < old_cost:
+            return 1.0
+        return math.exp((old_cost - new_cost) / temperature)
 
+    sizeOfnetwork = 0
+    for key in network:
+        for _ in network[key]:
+            sizeOfnetwork += 1
 
+    current_trajectory = [1 for _ in range(sizeOfnetwork)]
+    current_f_value = f(current_trajectory, network, C, airport_to_connect_list)
+    best_trajectory = current_trajectory
+    best_f_value = current_f_value
 
+    temperature = initial_temperature
+
+    while temperature > 1:
+        new_trajectory = generateRandomNeigh(current_trajectory)
+        new_f_value = f(new_trajectory, network, C, airport_to_connect_list)
+
+        if acceptance_probability(current_f_value, new_f_value, temperature) > random.random():
+            current_trajectory = new_trajectory
+            current_f_value = new_f_value
+
+        if new_f_value < best_f_value:
+            best_trajectory = new_trajectory
+            best_f_value = new_f_value
+
+        temperature *= cooling_rate
+
+    return best_trajectory, best_f_value
+
+def findOptimalTrajectoryWithHeatMultipleExecution(network, C, output_folder, airport_to_connect_list, initial_temperature, cooling_rate, numberOfstart):
+    best_trajectory = None
+    best_f_value = 0
+    for i in range(numberOfstart):
+        trajectory, f_value = findOptimalTrajectoryWithHeat(network, C, output_folder, airport_to_connect_list, initial_temperature, cooling_rate)
+        if(best_trajectory == None or f_value < best_f_value):
+            best_trajectory = trajectory
+            best_f_value = f_value
+
+    print("la trajectoire optimale est : ", appliquer_masque(network, best_trajectory))
+    
+    l = translateDicoToList(appliquer_masque(network, best_trajectory))
+
+    print(" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! l =" )
+    print(l)
+    print("la valeur de f est : ", best_f_value)
+    
+
+    clearFile(output_folder + "/optimal_trajectory.csv")
+    for el in l:
+        addlistTofile(el, output_folder + "/optimal_trajectory.csv")
+    print("le fichier à été enregistré à l'adresse : ", output_folder + "/optimal_trajectory.csv")
+
+    return best_trajectory
 
 

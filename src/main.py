@@ -19,7 +19,10 @@ def main():
     output_folder = "./output_csv"
     os.makedirs(output_folder, exist_ok=True)
 
-    
+    # ---------------------
+    # ----Parse Initial----
+    # ---------------------
+
     network_graph, id_to_index = parse_airport_data(airports_file, routes_file)
     network_graph_adj_list = nx.to_dict_of_lists(network_graph)
 
@@ -29,6 +32,15 @@ def main():
     df = pd.DataFrame(network_graph_adj_matrix)
     df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
     airport_to_connect_list = [[7,4]] # à completer
+
+    # ---------------------
+    # --Parse Secondaire---
+    # ---------------------
+
+    cost_graph, id_to_index2 = parse_cost()
+    network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
+    df_price = pd.DataFrame(network_graph_adj_matrix_price)
+    df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False)
 
     
     C = 5
