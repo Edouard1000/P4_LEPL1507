@@ -72,15 +72,6 @@ def mutate(individual, P, mutation_rate=0.1):
             individual.append(random.choice(list(set(P) - set(individual))))  # Ajout
     return individual
 
-"""
-    :param ID_start: Identifiant de l'aéroport de départ.
-    :param ID_end: Identifiant de l'aéroport d'arrivée.
-    :return: Distance calculée entre les deux aéroports.
-"""
-def distance(start, end):
-    """Calcule la distance entre deux aéroports."""
-    return 5
-
 
 """
     :param P: Liste des connexions possibles sous forme de tuples (start, end, weight).
@@ -91,7 +82,7 @@ def distance(start, end):
     :param mutation_rate: Probabilité de mutation.
     :return: Meilleur individu trouvé représentant le réseau optimisé.
 """
-def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1):
+def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False):
     """Exécute l'algorithme génétique."""
     population = initialize_population(P, population_size)
     evolution = []
@@ -118,5 +109,31 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
         )[:population_size]
 
+    if withFinalHillClimb:
+
+        def generateNeighbors(best_individual, P):
+            neighbors = []
+            for best_individual_edge in best_individual:
+                neighbors.append([edge for edge in best_individual if edge != best_individual_edge])
+            return neighbors
+
+        best_individual = population[0]
+        best_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in best_individual]), best_individual, J, C)
+        
+        improved = True
+        while improved:
+            improved = False
+            neighbors = generateNeighbors(best_individual, P)
+            for neighbor in neighbors:
+                neighbor_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in neighbor]), neighbor, J, C)
+                if neighbor_fitness < best_fitness:
+                    best_individual = neighbor
+                    best_fitness = neighbor_fitness
+                    improved = True
+
+        population[0] = best_individual
+        evolution.append(best_fitness)
+        return best_individual, evolution
+        
     return population[0], evolution  # Meilleure solution trouvée
 

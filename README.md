@@ -3,8 +3,6 @@ README
 # csv
 Contient les documents csv à prendre en entrée
 
-## Fichiers des Aéroports
-
 ### 1. `airports.csv`
 - **Description :** Contient les informations de 75 aéroports.
 - **Colonnes :**
@@ -16,60 +14,69 @@ Contient les documents csv à prendre en entrée
   - `latitude` : Latitude géographique.
   - `longitude` : Longitude géographique.
 
-### 2. `airports_europe.csv`
-- **Description :** Contient les informations de 12 aéroports européens.
-- **Colonnes :** Identiques à `airports.csv`.
-
 ---
 
-## Fichiers des Routes
-
-### 3. `pre_existing_routes.csv`
+### 2. `pre_existing_routes.csv`
 - **Description :** Contient 1791 routes aériennes préexistantes.
 - **Colonnes :**
   - `ID_start` : Identifiant de l'aéroport de départ.
   - `ID_end` : Identifiant de l'aéroport d'arrivée.
 
-### 4. `pre_existing_routes_europe.csv`
-- **Description :** Contient 50 routes aériennes en Europe.
-- **Colonnes :** Identiques à `pre_existing_routes.csv`.
+---
+
+
+### 3. `prices.csv`
+- **Description :** Contient le prix des billets pour les 1791 routes aériennes préexistantes.
+- **Colonnes :** 
+  - `ID_start` : Identifiant de l'aéroport de départ.
+  - `ID_end` : Identifiant de l'aéroport d'arrivée.
+  - `price_tag` : Le prix du billet 
 
 ---
 
-## Fichiers de Test
-
-### 5. `testFileAirports.csv`
-- **Description :** Contient 9 aéroports pour les tests.
-- **Colonnes :** Identiques à `airports.csv`.
-
-### 6. `testFilePreExistingRoutes.csv`
-- **Description :** Contient 5 routes aériennes pour les tests.
-- **Colonnes :** Identiques à `pre_existing_routes.csv`.
+### 4. `waiting_times.csv`
+- **Description :** Contient les temps d'attentes pour chaque aéroport.
+- **Colonnes :** 
+  - `ID` : Identifiant de l'aéroport.
+  - `idle_time` : Temps d'attente dans l'aéroport.
 
 ---
 
+### 5. `wanted_journeys.csv`
+- **Description :** Contient les trajets à réaliser.
+- **Colonnes :** 
+  - `ID_start` : Identifiant de l'aéroport de départ.
+  - `ID_end` : Identifiant de l'aéroport d'arrivée.
+
+---
 
 # output_csv
 Contient les documents csv remis en sortie
 
 ## Fichiers de Matrice
 
-### 1. `network_graph_adj_matrix.csv`
-- **Description :** Matrice d'adjacence représentant les distances entre 12 aéroports dans le réseau.
+### 1. `network_graph_adj_matrix_costs.csv`
+- **Description :** Matrice d'adjacence représentant les prix des billets des routes aériennes préexistantes.
 - **Colonnes :**
-  - Chaque colonne et ligne représente un aéroport (indices de 0 à 11).
+  - Chaque colonne et ligne représente un aéroport.
+  - Les valeurs indiquent le prix du billet d'avion entre les aéroports correspondants.
+
+---
+
+### 2. `network_graph_adj_matrix.csv`
+- **Description :** Matrice d'adjacence représentant les distances entre les routes aériennes préexistantes.
+- **Colonnes :**
+  - Chaque colonne et ligne représente un aéroport.
   - Les valeurs indiquent la distance entre les aéroports correspondants.
 
 ---
 
-## Fichiers de Trajectoire Optimale
-
-### 2. `optimal_trajectory.csv`
+### 3. `optimal_trajectory.csv`
 - **Description :** Contient les connexions optimisées entre les aéroports après application de l'algorithme de recherche.
 - **Colonnes :**
   - `ID_start` : Identifiant de l'aéroport de départ.
   - `ID_end` : Identifiant de l'aéroport d'arrivée.
-- **Nombre de trajets optimisés :** 3
+
 
 ---
 
