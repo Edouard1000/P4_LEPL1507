@@ -31,3 +31,22 @@ def earth_distance(lat1, lon1, lat2, lon2): #à pas utiliser
     g = geod.Inverse(lat1, lon1, lat2, lon2)
     return g['s12'] / 1000  # Conversion de la distance en kilomètres
 
+def dist_to_time(distance_km, cruise_speed_kmh=900, extra_time=0.75):
+    """
+    Convert flight distance to estimated travel time.
+
+    Parameters:
+    - distance_km (float): Distance between two airports in kilometers.
+    - cruise_speed_kmh (float): Speed of the aircraft in km/h (default 900 km/h).
+    - extra_time (float): Additional time for takeoff and landing in hours (default 45 min -> 0.75 h).
+
+    Returns:
+    - float: Estimated flight duration in hours.
+    """
+    if distance_km <= 0:
+        return 0  # No travel if distance is zero or invalid
+
+    cruise_time = distance_km / cruise_speed_kmh 
+    total_time = cruise_time + extra_time 
+    return total_time
+
