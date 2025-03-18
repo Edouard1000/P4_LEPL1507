@@ -1,6 +1,6 @@
 import os
-import sys
-import parse as parse
+from parse import parse_airport_data, parse_cost
+import random
 import genetics as gen
 import archives.f as f
 import utility_functions as uf
@@ -23,7 +23,10 @@ def main():
     output_folder = "./output_csv"
     os.makedirs(output_folder, exist_ok=True)
 
-    
+    # ---------------------
+    # --Parse Primaire-----
+    # ---------------------
+
     network_graph, id_to_index = parse_airport_data(airports_file, routes_file)
     network_graph_adj_list = nx.to_dict_of_lists(network_graph)
 

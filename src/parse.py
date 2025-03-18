@@ -62,7 +62,7 @@ def parse_cost(airports_file="./csv/airports.csv", routes_file="./csv/pre_existi
     # Charger les fichiers CSV
     airports_df = pd.read_csv(airports_file)
     routes_df = pd.read_csv(routes_file)
-    costs_df = pd.read_csv("./secondary_csv/prices.csv")
+    costs_df = pd.read_csv("./csv/prices.csv")
 
     # Création d'un graphe dirigé
     G = nx.DiGraph()

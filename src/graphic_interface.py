@@ -23,7 +23,7 @@ airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Lon
 
 cost_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix_costs.csv", header=None).values
 dist_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix.csv", header=None).values
-waiting_time = pd.read_csv("./secondary_csv/waiting_times.csv", header=None).values
+waiting_time = pd.read_csv("./csv/waiting_times.csv", header=None).values
 
 waiting_time = pd.DataFrame(waiting_time)
 waiting_time.columns = waiting_time.iloc[0]  # Set the first row as the header
