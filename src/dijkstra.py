@@ -4,7 +4,8 @@ import networkx as nx
 import math
 import heapq
 import copy
-
+from utility_functions import euclidean_distance, dist_to_time
+dist_matrix  = pd.read_csv('./output_csv/network_graph_adj_matrix.csv', header=None).values
 # ----------------------------
 # --- Dijkstra avec Graphe ---
 # ----------------------------
@@ -78,6 +79,7 @@ def optimized_dijkstra(graph, starts, endss):
 
         # Run NetworkX's optimized Dijkstra for a single source
         shortest_distances, shortest_paths = nx.single_source_dijkstra(graph, start, weight="distance")
+        shortest_distances, shortest_paths = nx.sing
 
         # Store only the necessary results
         for end in ends:
@@ -87,7 +89,6 @@ def optimized_dijkstra(graph, starts, endss):
 
     return distances, paths
 
-dist_matrix  = pd.read_csv('./output_csv/network_graph_adj_matrix.csv', header=None).values
 def dijkstra_adj_list(adj_list, starts, endss, distances=None, paths=None, deleted_edge=None): 
     '''
     Parameters
@@ -137,6 +138,44 @@ def dijkstra_adj_list(adj_list, starts, endss, distances=None, paths=None, delet
                             paths[start][neighbor] = (paths[start][current_node] or []) + [current_node] # Update the path
                         heapq.heappush(priority_queue, (distance, neighbor)) # Push the neighbor to the priority queue
     return distances, paths # Return the distance and path matrices
+
+def dijkstra_time(adj_list, starts, endss, time_matrix, idle_time, graph):
+
+    n = len(time_matrix)
+    times = [None] * n
+    paths = [None] * n
+    for start in starts:
+        ends = set(endss[start])
+        times[start] = [float('inf')] * n
+        paths[start] = [None] * n
+        times[start][start] = 0
+        priority_queue = [(0, start)]
+        visited = [False] * n
+        while priority_queue and ends:
+            current_time, current_node = heapq.heappop(priority_queue)
+            if current_node is None:
+                break
+            if visited[current_node] or current_node not in adj_list:
+                continue
+            if current_node in ends:
+                ends.remove(current_node)
+            visited[current_node] = True
+            for neighbor in adj_list[current_node]:
+                new_time = dist_to_time(time_matrix[current_node][neighbor])
+                if new_time > 0 and not visited[neighbor]:
+
+                    id = graph.nodes[current_node]['ID']
+                    additional_time = idle_time[idle_time['ID']==id]["idle_time"].iloc[0]/60 if current_node != start else 0
+
+                    time = current_time + new_time + additional_time
+                    if time < times[start][neighbor]:
+                        times[start][neighbor] = time
+                        if current_node == start:
+                            paths[start][neighbor] = []
+                        else:
+                            paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]
+                        heapq.heappush(priority_queue, (time, neighbor))
+    return times, paths
 
 def cor_dijkstra_adj_list(adj_list, starts, endss): 
     n = len(dist_matrix)  # Nombre de nœuds
@@ -231,42 +270,4 @@ def new_dijkstra_adj_list(adj_list, starts, endss, prev_distances=None, prev_pat
 
     return distances, paths
 
-'''
-def new_dijkstra_adj(adjacency, starts, endss, distances, paths, removed_edge):
-    u, v = removed_edge  # Arête supprimée
-    n = len(adjacency)
-    affected_starts = set()
-
-    # Identifier les trajets impactés
-    for start in starts:
-        for end in endss[starts.index(start)]:
-            if paths[start][end] and u in paths[start][end] and v in paths[start][end]:
-                affected_starts.add(start)
-
-    # Recalculer Dijkstra uniquement pour les trajets affectés
-    for start in affected_starts:
-        ends = set(endss[starts.index(start)])
-        distances[start] = [float('inf')] * n
-        paths[start] = [None] * n
-        distances[start][start] = 0
-        priority_queue = [(0, start)]
-        visited = [False] * n
-        
-        while priority_queue:
-            current_distance, current_node = heapq.heappop(priority_queue)
-            if visited[current_node]:
-                continue
-            visited[current_node] = True
-            if current_node in ends:
-                ends.remove(current_node)
-            for neighbor, new_distance in enumerate(adjacency[current_node]):
-                if new_distance > 0 and not visited[neighbor]:
-                    distance = current_distance + new_distance
-                    if distance < distances[start][neighbor]:
-                        distances[start][neighbor] = distance
-                        paths[start][neighbor] = (paths[start][current_node] or []) + [current_node]
-                        heapq.heappush(priority_queue, (distance, neighbor))
-
-    return distances, paths
-'''
 

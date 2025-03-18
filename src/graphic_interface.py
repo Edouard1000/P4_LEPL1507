@@ -2,26 +2,25 @@ import webbrowser
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
-import networkx as nx
 import pandas as pd
 import plotly.graph_objects as go
 import parse as parse
 import secondary_parse as parse2
-from secondary_parse import dist_to_time
+import utility_functions as uf
 import dijkstra as dij
+import networkx as nx
 
 graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
 cost_graph, id_to_index2 = parse2.parse_cost()
 # Load data
 airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
 
-# network_graph_adj_matrix = nx.adjacency_matrix(graph, weight= "distance").todense()
-# df = pd.DataFrame(network_graph_adj_matrix)
-# df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
-
-# network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
-# df_price = pd.DataFrame(network_graph_adj_matrix_price)
-# df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False)
+#network_graph_adj_matrix = nx.adjacency_matrix(graph, weight= "distance").todense()
+#df = pd.DataFrame(network_graph_adj_matrix)
+#df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
+#network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
+#df_price = pd.DataFrame(network_graph_adj_matrix_price)
+#df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False, header=False)
 
 cost_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix_costs.csv", header=None).values
 dist_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix.csv", header=None).values
@@ -150,13 +149,12 @@ app.layout = html.Div([
 def update_best_route(start, end, criterium):
     fig = go.Figure()
     if (end == start or start is None or end is None or criterium is None):
-        fig = add_node(fig, airports[airports["ID"] == start].iloc[0], color="red")
-        return update_layout(fig, "Choose a valid start and destination airport and criterium"), 0
+        fig = add_node(fig, airports[airports["ID"] == start].iloc[0], "airport", color="red")
+        return update_layout(fig), 0, 0, 0
 
     start_ind = id_to_index[start]
     end_ind = id_to_index[end]
     source_airport = airports[airports["ID"] == start].iloc[0]
-    dest_airport = airports[airports["ID"] == end].iloc[0]
     distances = None
     paths = None
     best_path = None
@@ -164,46 +162,45 @@ def update_best_route(start, end, criterium):
     dist = 0
     time = 0
 
-    if start_ind == end_ind:
-        return update_layout(fig, "Start and destination airports are the same"), 0, 0, 0
-
     # Calculate the best path based on the selected criterium
     if criterium == "distance":
-        distances, paths = dij.optimized_dijkstra(graph, [start_ind], [[end_ind]])
-        best_path = paths[start_ind][end_ind]
+        distances, paths = nx.single_source_dijkstra(graph, start_ind, target=end_ind, weight="distance")
+        best_path = paths
 
-        dist = distances[start_ind][end_ind]
+        dist = distances
         for i, next_node in enumerate(best_path[1:]):
-            cost += cost_matrix[best_path[i]+1][next_node]
+            cost += cost_matrix[best_path[i]][next_node]
             node_id = graph.nodes[next_node]["ID"]
-            time += dist_to_time(dist_matrix[best_path[i]][next_node])+waiting_time[waiting_time["ID"] == node_id]["idle_time"].iloc[0]/60
+            time += uf.dist_to_time(dist_matrix[best_path[i]][next_node])+waiting_time[waiting_time["ID"] == node_id]["idle_time"].iloc[0]/60
         time -= waiting_time[waiting_time["ID"] == end]["idle_time"].iloc[0]/60
 
     elif criterium == "time":
-        distances, paths = parse2.dijkstra_time(graph, [start_ind], {start_ind : [end_ind]}, dist_matrix, waiting_time, graph)
+        distances, paths = dij.dijkstra_time(graph, [start_ind], {start_ind : [end_ind]}, dist_matrix, waiting_time, graph)
         best_path = [start_ind]+paths[start_ind][end_ind]+[end_ind]
 
         time = distances[start_ind][end_ind]
         for i, next_node in enumerate(best_path[1:]):
-            cost += cost_matrix[best_path[i]+1][next_node]
+            cost += cost_matrix[best_path[i]][next_node]
             dist += dist_matrix[best_path[i]][next_node]
 
     elif criterium == "cost":
-        distances, paths = dij.optimized_dijkstra(cost_graph, [start_ind], [[end_ind]])
-        best_path = paths[start_ind][end_ind]
+        distances, paths = nx.single_source_dijkstra(cost_graph, start_ind, target=end_ind, weight="distance")
+        best_path = paths
 
-        cost = distances[start_ind][end_ind]
+        cost = distances
         for i, next_node in enumerate(best_path[1:]):
             dist += dist_matrix[best_path[i]][next_node]
             node_id = graph.nodes[next_node]["ID"]
-            time += dist_to_time(dist_matrix[best_path[i]][next_node])+ waiting_time[waiting_time["ID"] == node_id]["idle_time"].iloc[0]/60
+            time += uf.dist_to_time(dist_matrix[best_path[i]][next_node])+ waiting_time[waiting_time["ID"] == node_id]["idle_time"].iloc[0]/60
         time -= waiting_time[waiting_time["ID"] == end]["idle_time"].iloc[0]/60
+
+        
     if best_path is None:
         return update_layout(fig, f"No existing route from {start} to {end}"), 0, 0, 0
     
     plot_path(fig, best_path, airports, source_airport)
          
-    update_layout(fig, f"Routes from {source_airport['name']} to {dest_airport['name']}")
+    update_layout(fig)
     return fig, round(dist, 2), round(time, 2) , round(cost, 2)
 
 @app.callback(
@@ -253,7 +250,7 @@ def add_trace(fig, current, next, color="blue"):
     ))
     return fig
 
-def update_layout(fig, title):
+def update_layout(fig):
     fig.update_layout(
         #title=dict(
         #    text=title,
