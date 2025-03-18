@@ -1,7 +1,7 @@
 import os
 import sys
 from parse import parse_airport_data
-import f as f
+import archives.f as f
 import utility_functions as uf
 import networkx as nx
 import pandas as pd

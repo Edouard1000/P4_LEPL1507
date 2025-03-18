@@ -5,13 +5,12 @@ from dash.dependencies import Input, Output, State
 import pandas as pd
 import plotly.graph_objects as go
 import parse as parse
-import secondary_parse as parse2
 import utility_functions as uf
 import dijkstra as dij
 import networkx as nx
 
 graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
-cost_graph, id_to_index2 = parse2.parse_cost()
+cost_graph, id_to_index2 = parse.parse_cost()
 # Load data
 airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
 

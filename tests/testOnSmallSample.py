@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './pytho
 
 # Importer les modules nécessaires
 from src.parse import parse_airport_data
-import src.f as f
+import archives.f as f
 import src.utility_functions
 import src.airpots_plot as ap 
 
