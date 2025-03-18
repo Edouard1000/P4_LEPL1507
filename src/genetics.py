@@ -72,15 +72,6 @@ def mutate(individual, P, mutation_rate=0.1):
             individual.append(random.choice(list(set(P) - set(individual))))  # Ajout
     return individual
 
-"""
-    :param ID_start: Identifiant de l'aéroport de départ.
-    :param ID_end: Identifiant de l'aéroport d'arrivée.
-    :return: Distance calculée entre les deux aéroports.
-"""
-def distance(start, end):
-    """Calcule la distance entre deux aéroports."""
-    return 5
-
 
 """
     :param P: Liste des connexions possibles sous forme de tuples (start, end, weight).
