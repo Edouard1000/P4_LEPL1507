@@ -1,5 +1,7 @@
 import webbrowser
+import threading
 import dash
+import time
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 import pandas as pd
@@ -166,7 +168,11 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
 
         # Calculate the best path based on the selected criterium
         if criterium == "distance":
-            distances, paths = nx.single_source_dijkstra(graph, start_ind, target=end_ind, weight="distance")
+            try:
+                distances, paths = nx.single_source_dijkstra(graph, source=start_ind, target=end_ind, weight="distance")
+            except nx.NetworkXNoPath:
+                return update_layout(fig), 0, 0, 0
+            
             best_path = paths
 
             dist = distances
@@ -178,6 +184,7 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
 
         elif criterium == "time":
             distances, paths = dij.dijkstra_time(graph, [start_ind], {start_ind : [end_ind]}, dist_matrix, waiting_time, graph)
+            
             best_path = [start_ind]+paths[start_ind][end_ind]+[end_ind]
 
             time = distances[start_ind][end_ind]
@@ -186,7 +193,11 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
                 dist += dist_matrix[best_path[i]][next_node]
 
         elif criterium == "cost":
-            distances, paths = nx.single_source_dijkstra(cost_graph, start_ind, target=end_ind, weight="distance")
+            try :
+                distances, paths = nx.single_source_dijkstra(cost_graph, start_ind, target=end_ind, weight="distance")
+            except nx.NetworkXNoPath:
+                return update_layout(fig, f"No existing route from {start} to {end}"), 0, 0, 0
+            
             best_path = paths
 
             cost = distances
@@ -198,7 +209,7 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
 
 
         if best_path is None:
-            return update_layout(fig, f"No existing route from {start} to {end}"), 0, 0, 0
+            return update_layout(fig), 0, 0, 0
 
         plot_path(fig, best_path, airports, source_airport)
 
@@ -276,9 +287,11 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
             paper_bgcolor="white",  # Background color of entire figure
         )
         return fig
-    if __name__ == "__main__":
-        webbrowser.open("http://127.0.0.1:8050/")  # Open the Dash app in the browser
-        app.run_server(debug=True)
 
-graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, dist_matrix)
+    return app
+
+if __name__ == "__main__":
+    app = graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, dist_matrix)
+    app.run_server(debug=True, use_reloader=False)
+
     
