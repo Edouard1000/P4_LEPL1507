@@ -1,41 +1,6 @@
 import networkx as nx
 from scipy.optimize import linprog
 import numpy as np
-import csv
-
-def read_airports(filename):
-    """
-    Lit le fichier capacities_airports.csv et retourne un dictionnaire
-    avec les identifiants d'aéroport et leur capacité.
-    """
-    airports = {}
-    with open(filename, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            # On lit l'identifiant et la capacité (en ignorant la première colonne d'index)
-            airport_id = row['airportsID']
-            capacity = int(row['capacity'])
-            airports[airport_id] = capacity
-    return airports
-
-def read_connections(filename, default_cost=1):
-    """
-    Lit le fichier capacities_connexions.csv et retourne une liste de tuples
-    (origin, destination, capacity, cost).
-    
-    Ici, comme il n'y a pas de coût, on assigne default_cost à chaque connexion.
-    """
-    connections = []
-    with open(filename, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            origin = row['ID_start']
-            destination = row['ID_end']
-            capacity = int(row['connexion capacity'])
-            cost = default_cost  # Coût par défaut, à adapter selon vos besoins
-            connections.append((origin, destination, capacity, cost))
-    return connections
-
 
 def minimum_time_flow(graph, populations, target):
     """
