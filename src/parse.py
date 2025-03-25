@@ -108,9 +108,6 @@ def parse_flow_network(
         G (nx.DiGraph): Graphe dirigé avec attributs.
         id_to_index (dict): Mapping des ID d’aéroports vers leur index interne.
     """
-    import pandas as pd
-    import networkx as nx
-    import utility_functions as uf
 
     # Chargement des fichiers CSV
     airports_df = pd.read_csv(airports_file)
@@ -119,7 +116,7 @@ def parse_flow_network(
     conn_caps_df = pd.read_csv(connection_caps_file).rename(columns={
         "ID_start": "from",
         "ID_end": "to",
-        "connexion capacity": "capacity"  # ✅ correction du nom de colonne
+        "connexion capacity": "capacity" 
     })
 
     # Suppression de colonnes parasites éventuelles
