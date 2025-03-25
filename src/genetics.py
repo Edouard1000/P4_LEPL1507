@@ -3,6 +3,8 @@ import random
 import networkx as nx
 import utility_functions as uf  
 from tqdm import tqdm
+import time
+
 
 def heuristic(A1, A2, dico):
     return dico[(A1, A2)]
@@ -16,7 +18,7 @@ def heuristic(A1, A2, dico):
 """
 def evaluate_fitness(graph, E, J, C, dico):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
-    total_distance = 0
+    """total_distance = 0
     punition = 0
 
     for (At, Al) in J:
@@ -24,6 +26,23 @@ def evaluate_fitness(graph, E, J, C, dico):
             total_distance += nx.astar_path_length(graph, source=At, target=Al, heuristic=lambda n1, n2: heuristic(n1, n2, dico), weight='weight')
         except:
             punition += 1000000  # Pénalité pour trajets impossibles
+    return punition + (total_distance / len(J)) + C * len(E)"""
+    total_distance = 0
+    punition = 0
+    sources = {At for At  in J}  # Ensemble des sources uniques
+
+    # Calculer une seule fois Dijkstra pour chaque source At
+    try : 
+        dijkstra_results = {At: nx.single_source_dijkstra_path_length(graph, At, weight='weight') for At in sources}
+    except:
+        punition += 1000000  # Pénalité pour trajets impossibles
+
+    for At, Al in J:
+        try :
+            total_distance += dijkstra_results[At][Al]
+        except:
+            punition += 1000000  # Pénalité pour trajets impossibles
+
     return punition + (total_distance / len(J)) + C * len(E)
 
 """
@@ -76,6 +95,24 @@ def mutate(individual, P, mutation_rate=0.1):
     return individual
 
 
+
+def check_min_max_range(data):
+    # Ensure the list has at least 10 items
+    if len(data) < 10:
+        return False
+
+    # Get the last 10 items
+    last_10 = data[-10:]
+
+    # Find the minimum and maximum values
+    min_val = min(last_10)
+    max_val = max(last_10)
+
+    # Check if they are within a 0.01% range
+    tolerance = 0.0001 * min_val
+    return (max_val - min_val) <= tolerance
+
+
 """
     :param P: Liste des connexions possibles sous forme de tuples (start, end, weight).
     :param J: Liste des trajets à satisfaire sous forme de tuples (At, Al).
@@ -85,8 +122,10 @@ def mutate(individual, P, mutation_rate=0.1):
     :param mutation_rate: Probabilité de mutation.
     :return: Meilleur individu trouvé représentant le réseau optimisé.
 """
-def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False):
+def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False, minutes=60):
     """Exécute l'algorithme génétique."""
+    time_start = int(time.time())
+    time_out = (minutes - 1)  * 60
     dico = {}
     for start in graph_original.nodes:
         for (_, Al) in J:
@@ -95,6 +134,8 @@ def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=
     population = initialize_population(P, population_size)
     evolution = []
     for _ in tqdm(range(generations), desc="Générations"):
+        if int(time.time()) - time_start > time_out:
+            break
         # print("\n")
         fitnesses = []
         for E in population:
@@ -104,6 +145,7 @@ def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=
             fitnesses.append(evaluate_fitness(graph, E, J, C, dico))
         # print(min(fitnesses))
         evolution.append(min(fitnesses))
+        print(min(fitnesses))
         
         new_population = []
         for _ in range(population_size//2):
@@ -116,6 +158,10 @@ def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=
             new_population, 
             key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C, dico)
         )[:population_size]
+
+        if check_min_max_range(evolution):
+            break
+        
 
     if withFinalHillClimb:
 
