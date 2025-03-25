@@ -2,7 +2,7 @@ import parse as prs
 import random
 import csv
 
-numberOfJourneys = 10 # Change this to the number of journeys you want to generate
+numberOfJourneys = 20 # Change this to the number of journeys you want to generate
 csv_folder_path = 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv' # Change this to the path of the csv folder
 
 G, _ = prs.parse_airport_data()
@@ -13,7 +13,7 @@ for i in G.nodes:
 # print(airports)
 
 journeys = []
-for _ in range(10):  # Generate 10 random journeys
+for _ in range(numberOfJourneys):
     start = random.choice(airports)
     end = random.choice(airports)
     while start == end:  # Ensure start and end are different
