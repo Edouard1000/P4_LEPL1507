@@ -4,6 +4,9 @@ import networkx as nx
 import utility_functions as uf  
 from tqdm import tqdm
 
+def heuristic(A1, A2, dico):
+    return dico[(A1, A2)]
+
 """
     :param graph: Graphe NetworkX représentant le réseau de connexions.
     :param E: Liste des connexions (start, end, weight) dans l'individu.
@@ -11,7 +14,7 @@ from tqdm import tqdm
     :param C: Coefficient pondérant le coût opérationnel du réseau.
     :return: Valeur de fitness calculée.
 """
-def evaluate_fitness(graph, E, J, C):
+def evaluate_fitness(graph, E, J, C, dico):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
     total_distance = 0
     punition = 0
@@ -82,8 +85,13 @@ def mutate(individual, P, mutation_rate=0.1):
     :param mutation_rate: Probabilité de mutation.
     :return: Meilleur individu trouvé représentant le réseau optimisé.
 """
-def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False):
+def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False):
     """Exécute l'algorithme génétique."""
+    dico = {}
+    for start in graph_original.nodes:
+        for (_, Al) in J:
+            dico[(start, Al)] = uf.distance(start, Al, graph_original)
+
     population = initialize_population(P, population_size)
     evolution = []
     for _ in tqdm(range(generations), desc="Générations"):
@@ -93,7 +101,7 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             graph = nx.DiGraph()
             for start, end, weight in E:
                 graph.add_edge(start, end, weight=weight)  # Ajout de poids aux arêtes
-            fitnesses.append(evaluate_fitness(graph, E, J, C))
+            fitnesses.append(evaluate_fitness(graph, E, J, C, dico))
         # print(min(fitnesses))
         evolution.append(min(fitnesses))
         
@@ -106,7 +114,7 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
         #population = sorted(new_population, key=lambda ind: evaluate_fitness(nx.DiGraph(ind), ind, J, C))[:population_size]
         population = sorted(
             new_population, 
-            key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
+            key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C, dico)
         )[:population_size]
 
     if withFinalHillClimb:
@@ -118,14 +126,14 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             return neighbors
 
         best_individual = population[0]
-        best_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in best_individual]), best_individual, J, C)
+        best_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in best_individual]), best_individual, J, C, dico)
         
         improved = True
         while improved:
             improved = False
             neighbors = generateNeighbors(best_individual, P)
             for neighbor in neighbors:
-                neighbor_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in neighbor]), neighbor, J, C)
+                neighbor_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in neighbor]), neighbor, J, C, dico)
                 if neighbor_fitness < best_fitness:
                     best_individual = neighbor
                     best_fitness = neighbor_fitness
