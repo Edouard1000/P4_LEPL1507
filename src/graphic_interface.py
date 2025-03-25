@@ -214,7 +214,10 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
         plot_path(fig, best_path, airports, source_airport)
 
         update_layout(fig)
-        return fig, round(dist, 2), round(time, 2) , round(cost, 2)
+        strdist = f"{round(dist, 2)} km"
+        strtime = f"{int(time)}h {int((time % 1) * 60)}m"
+        strcost = f"$ {round(cost, 2)}"
+        return fig, strdist, strtime , strcost
 
     @app.callback(
         [Output("airport-dropdown1", "value"),

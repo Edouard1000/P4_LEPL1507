@@ -62,40 +62,38 @@ def main():
     # ------------------------
     print("----------- GENETICS ALGORITHM --------------\n \n")
     C = 1000
-    #optimal_trajectory, evolution = compute_genetics(C, random_seed = 42, population_size = 1000, generations = 200, mutation_rate = 0.1, network_graph = network_graph, id_to_index = id_to_index, wanted_journeys_csv = wanted_journeys_csv)
-
-    #if(True):
-    #    plt.plot(evolution)
-    #    plt.xlabel('Generations')
-    #    plt.ylabel('Fitness')
-    #    plt.title('Evolution of Fitness over Generations')
-    #    plt.show()
+    optimal_trajectory, evolution = compute_genetics(C, random_seed = 42, population_size = 1000, generations = 200, mutation_rate = 0.2, network_graph = network_graph, id_to_index = id_to_index, wanted_journeys_csv = wanted_journeys_csv)
+    if(True):
+        plt.plot(evolution)
+        plt.xlabel('Generations')
+        plt.ylabel('Fitness')
+        plt.title('Evolution of Fitness over Generations')
+        plt.show()
 #
     ## ------------------------
     ## --- Plot the network ----
     ## ------------------------
 #
-    #print("\n--- Résultat de l'algorithme ---")
-    #print("Trajectoire optimale:", optimal_trajectory)
-#
-    ## Enregistrer la trajectoire optimale dans un fichier CSV
-    #with open("output_csv/optimal_trajectory.csv", "w") as file:
-    #    file.write("ID_start,ID_end\n")
-    #    for edge in optimal_trajectory:
-    #        file.write(f"{index_to_id[edge[0]]},{index_to_id[edge[1]]}\n")
+    print("\n--- Résultat de l'algorithme ---")
+    print("Trajectoire optimale:", optimal_trajectory)
 
+    # Enregistrer la trajectoire optimale dans un fichier CSV
+    with open("output_csv/optimal_trajectory.csv", "w") as file:
+        file.write("ID_start,ID_end\n")
+        for edge in optimal_trajectory:
+            file.write(f"{index_to_id[edge[0]]},{index_to_id[edge[1]]}\n")
     # Vérifier le contenu du fichier de sortie
-    #with open(f"{output_folder}/optimal_trajectory.csv", "r") as file:
-    #    saved_trajectory = file.read()
-    #ap.plot_airport_network(airports_file, 'output_csv/optimal_trajectory.csv', title="New Airport Network")
-#
-    #obt = []
-    #for edge in optimal_trajectory:
-    #    obt.append((index_to_id[edge[0]], index_to_id[edge[1]]))
-#
-    #if(True):
-    #    print("Trajectoire optimale:", obt)
-    #    print("Fitness = ", evolution[len(evolution)-1])  
+    with open(f"{output_folder}/optimal_trajectory.csv", "r") as file:
+        saved_trajectory = file.read()
+    ap.plot_airport_network(airports_file, 'output_csv/optimal_trajectory.csv', title="New Airport Network")
+
+    obt = []
+    for edge in optimal_trajectory:
+        obt.append((index_to_id[edge[0]], index_to_id[edge[1]]))
+
+    if(True):
+        print("Trajectoire optimale:", obt)
+        print("Fitness = ", evolution[len(evolution)-1])  
     
     # --------------------------
     # --- Graphic Interface ----
