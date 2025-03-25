@@ -3,7 +3,7 @@ import random
 import networkx as nx
 import utility_functions as uf  
 from tqdm import tqdm
-
+import time
 """
     :param graph: Graphe NetworkX représentant le réseau de connexions.
     :param E: Liste des connexions (start, end, weight) dans l'individu.
@@ -73,6 +73,24 @@ def mutate(individual, P, mutation_rate=0.1):
     return individual
 
 
+
+def check_min_max_range(data):
+    # Ensure the list has at least 10 items
+    if len(data) < 10:
+        return False
+
+    # Get the last 10 items
+    last_10 = data[-10:]
+
+    # Find the minimum and maximum values
+    min_val = min(last_10)
+    max_val = max(last_10)
+
+    # Check if they are within a 0.01% range
+    tolerance = 0.0001 * min_val
+    return (max_val - min_val) <= tolerance
+
+
 """
     :param P: Liste des connexions possibles sous forme de tuples (start, end, weight).
     :param J: Liste des trajets à satisfaire sous forme de tuples (At, Al).
@@ -82,11 +100,15 @@ def mutate(individual, P, mutation_rate=0.1):
     :param mutation_rate: Probabilité de mutation.
     :return: Meilleur individu trouvé représentant le réseau optimisé.
 """
-def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False):
+def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False, minutes=60):
     """Exécute l'algorithme génétique."""
+    time_start = int(time.time())
+    time_out = (minutes - 1)  * 60
     population = initialize_population(P, population_size)
     evolution = []
     for _ in tqdm(range(generations), desc="Générations"):
+        if int(time.time()) - time_start > time_out:
+            break
         # print("\n")
         fitnesses = []
         for E in population:
@@ -96,6 +118,7 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             fitnesses.append(evaluate_fitness(graph, E, J, C))
         # print(min(fitnesses))
         evolution.append(min(fitnesses))
+        print(min(fitnesses))
         
         new_population = []
         for _ in range(population_size//2):
@@ -108,6 +131,10 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             new_population, 
             key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
         )[:population_size]
+
+        if check_min_max_range(evolution):
+            break
+        
 
     if withFinalHillClimb:
 
