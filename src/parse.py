@@ -92,6 +92,81 @@ def parse_cost(airports_file="./csv/airports.csv", routes_file="./csv/pre_existi
 
     return G, id_to_index
 
+def parse_flow_network(
+    airports_file="./csv/airports.csv",
+    routes_file="./csv/pre_existing_routes.csv",
+    airport_caps_file="./csv/capacities_airports.csv",
+    connection_caps_file="./csv/capacities_connexions.csv"
+):
+    """
+    Construit un graphe dirigé avec :
+    - les aéroports comme sommets (avec capacité),
+    - les routes comme arêtes (avec capacité et distance),
+    - les distances comme poids d’arêtes (optimisation).
+
+    Returns:
+        G (nx.DiGraph): Graphe dirigé avec attributs.
+        id_to_index (dict): Mapping des ID d’aéroports vers leur index interne.
+    """
+    import pandas as pd
+    import networkx as nx
+    import utility_functions as uf
+
+    # Chargement des fichiers CSV
+    airports_df = pd.read_csv(airports_file)
+    routes_df = pd.read_csv(routes_file).rename(columns={"ID_start": "from", "ID_end": "to"})
+    airport_caps_df = pd.read_csv(airport_caps_file)
+    conn_caps_df = pd.read_csv(connection_caps_file).rename(columns={
+        "ID_start": "from",
+        "ID_end": "to",
+        "connexion capacity": "capacity"  # ✅ correction du nom de colonne
+    })
+
+    # Suppression de colonnes parasites éventuelles
+    if "Unnamed: 0" in conn_caps_df.columns:
+        conn_caps_df.drop(columns=["Unnamed: 0"], inplace=True)
+
+    # Initialisation du graphe
+    G = nx.DiGraph()
+    global id_to_index
+    id_to_index = {}
+
+    # Ajout des aéroports (nœuds)
+    for i, (_, row) in enumerate(airports_df.iterrows()):
+        airport_id = row["ID"]
+        id_to_index[airport_id] = i
+        G.add_node(i,
+                   name=row.get("name", ""),
+                   city=row.get("city", ""),
+                   country=row.get("country", ""),
+                   latitude=row["latitude"],
+                   longitude=row["longitude"],
+                   ID=airport_id,
+                   capacity=None)
+
+    # Ajout des capacités des aéroports (nœuds)
+    for _, row in airport_caps_df.iterrows():
+        airport_code = row["airportsID"]
+        if airport_code in id_to_index:
+            idx = id_to_index[airport_code]
+            G.nodes[idx]["capacity"] = row["capacity"]
+
+    # Ajout des arêtes avec capacité et distance
+    routes_df = routes_df.merge(conn_caps_df, on=["from", "to"])
+    for _, row in routes_df.iterrows():
+        start_id, end_id = row["from"], row["to"]
+        if start_id in id_to_index and end_id in id_to_index:
+            u, v = id_to_index[start_id], id_to_index[end_id]
+            x = (G.nodes[u]["latitude"], G.nodes[u]["longitude"])
+            y = (G.nodes[v]["latitude"], G.nodes[v]["longitude"])
+            distance = uf.earth_distance(*x, *y)
+            G.add_edge(u, v,
+                       capacity=row["capacity"],
+                       distance=distance,
+                       weight=distance)
+
+    return G, id_to_index
+
 def indexToId(index):
     for key in id_to_index:
         if id_to_index[key] == index:
