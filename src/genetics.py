@@ -21,7 +21,7 @@ def evaluate_fitness(graph, E, J, C, dico):
 
     for (At, Al) in J:
         try:
-            total_distance += nx.shortest_path_length(graph, source=At, target=Al, weight='weight')
+            total_distance += nx.astar_path_length(graph, source=At, target=Al, heuristic=lambda n1, n2: heuristic(n1, n2, dico), weight='weight')
         except:
             punition += 1000000  # Pénalité pour trajets impossibles
     return punition + (total_distance / len(J)) + C * len(E)
