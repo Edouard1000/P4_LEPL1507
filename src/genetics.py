@@ -4,6 +4,8 @@ import networkx as nx
 import utility_functions as uf  
 from tqdm import tqdm
 import time
+
+
 def heuristic(A1, A2, dico):
     return dico[(A1, A2)]
 
@@ -16,7 +18,7 @@ def heuristic(A1, A2, dico):
 """
 def evaluate_fitness(graph, E, J, C, dico):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
-    total_distance = 0
+    """total_distance = 0
     punition = 0
 
     for (At, Al) in J:
@@ -24,6 +26,23 @@ def evaluate_fitness(graph, E, J, C, dico):
             total_distance += nx.astar_path_length(graph, source=At, target=Al, heuristic=lambda n1, n2: heuristic(n1, n2, dico), weight='weight')
         except:
             punition += 1000000  # Pénalité pour trajets impossibles
+    return punition + (total_distance / len(J)) + C * len(E)"""
+    total_distance = 0
+    punition = 0
+    sources = {At for At  in J}  # Ensemble des sources uniques
+
+    # Calculer une seule fois Dijkstra pour chaque source At
+    try : 
+        dijkstra_results = {At: nx.single_source_dijkstra_path_length(graph, At, weight='weight') for At in sources}
+    except:
+        punition += 1000000  # Pénalité pour trajets impossibles
+
+    for At, Al in J:
+        try :
+            total_distance += dijkstra_results[At][Al]
+        except:
+            punition += 1000000  # Pénalité pour trajets impossibles
+
     return punition + (total_distance / len(J)) + C * len(E)
 
 """
