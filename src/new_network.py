@@ -49,7 +49,7 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
     J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in J]
 
-    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C, population_size = population_size, generations = generations, mutation_rate = mutation_rate, withFinalHillClimb= WithFinalHillClimb )
+    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C, network_graph, population_size = population_size, generations = generations, mutation_rate = mutation_rate, withFinalHillClimb= WithFinalHillClimb )
 
     if(make_plot):
         plt.plot(evolution)
