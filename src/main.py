@@ -62,7 +62,10 @@ def main():
     # ------------------------
     print("----------- GENETICS ALGORITHM --------------\n \n")
     C = 1000
-    optimal_trajectory, evolution = compute_genetics(C, random_seed = 42, population_size = 1000, generations = 200, mutation_rate = 0.2, network_graph = network_graph, id_to_index = id_to_index, wanted_journeys_csv = wanted_journeys_csv)
+    optimal_trajectory, evolution = compute_genetics(C, random_seed = 22, population_size = 200, 
+                                                     generations = 200, mutation_rate = 0.2, 
+                                                     network_graph = network_graph, id_to_index = id_to_index, 
+                                                     wanted_journeys_csv = wanted_journeys_csv)
     if(True):
         plt.plot(evolution)
         plt.xlabel('Generations')
