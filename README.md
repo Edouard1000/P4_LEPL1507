@@ -205,3 +205,61 @@ csv : contains the csv files about the airports and routes data
 tests : contains tests files for various uses
 
 Run : "python main.py" to find the optimal routes to keep
+
+## Formulation mathématique du problème
+
+### Problème de flot à coût minimal
+
+**Objectif :** Acheminer un flux `F` de passagers du nœud source `A_d` vers le nœud puits `A_a`, en minimisant la distance totale parcourue, tout en respectant les capacités des arcs.
+
+**Formulation :**
+
+Minimiser :  
+  ∑(u,v) ∈ E   d_uv × f_uv
+
+Sous contraintes :  
+  ∑_u f_uv = ∑_w f_vw    pour tout nœud `v` ≠ `A_d`, `A_a`  
+  ∑_v f_A_d,v − ∑_u f_u,A_d = F  
+  ∑_u f_u,A_a − ∑_v f_A_a,v = F  
+  0 ≤ f_uv ≤ c_uv    pour tout (u,v) ∈ E
+
+---
+
+### Définition des variables
+
+- **G = (V, E)** : Graphe orienté des aéroports et trajets.
+- **A_d** : Aéroport de départ (source).
+- **A_a** : Aéroport d’arrivée (puits).
+- **F** : Flux total de passagers à transférer.
+- **f_uv** : Nombre de passagers empruntant la liaison de `u` vers `v`.
+- **c_uv** : Capacité maximale (passagers/jour) de la liaison `u → v`.
+- **d_uv** : Distance (ou coût) associé à la liaison `u → v`.
+
+
+
+## Formulation mathématique du problème
+
+### Problème de flot à coût minimal
+
+**Objectif :** acheminer un flux \( F \) de passagers du nœud source \( A_d \) vers le nœud puits \( A_a \), en minimisant la distance totale parcourue tout en respectant les capacités des arcs.
+
+\[
+\begin{aligned}
+\text{Minimiser} \quad & \sum_{(u,v) \in E} d_{uv} \cdot f_{uv} \\
+\text{sous contraintes} \quad 
+& \sum_{u} f_{uv} = \sum_{w} f_{vw} \quad \forall v \notin \{A_d, A_a\} \\
+& \sum_{v} f_{A_d v} - \sum_{u} f_{u A_d} = F \\
+& \sum_{u} f_{u A_a} - \sum_{v} f_{A_a v} = F \\
+& 0 \leq f_{uv} \leq c_{uv} \quad \forall (u,v) \in E
+\end{aligned}
+\]
+
+### Définition des variables
+
+- \( G = (V, E) \) : Graphe orienté des aéroports et trajets.
+- \( A_d \) : Aéroport de départ (source).
+- \( A_a \) : Aéroport d’arrivée (puits).
+- \( F \) : Flux total de passagers à transférer.
+- \( f_{uv} \) : Nombre de passagers empruntant la liaison \( u \to v \).
+- \( c_{uv} \) : Capacité maximale (passagers/jour) sur la liaison \( u \to v \).
+- \( d_{uv} \) : Distance ou coût associé à la liaison \( u \to v \).

@@ -9,7 +9,7 @@ import genetics as gen
 import random
 import matplotlib.pyplot as plt
 
-def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, WithFinalHillClimb = False, random_seed = 42, make_plot = False, population_size = 1000, generations = 200, mutation_rate = 0.1, print_final_result = False):
+def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, WithFinalHillClimb = False, random_seed = 42, make_plot = False, population_size = 1000, generations = 200, mutation_rate = 0.1, print_final_result = False, minutes = 60):
 
     """
     Fonction principale pour tester l'algorithme de recherche de trajectoire optimale.
@@ -49,7 +49,7 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
     J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in J]
 
-    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C, population_size = population_size, generations = generations, mutation_rate = mutation_rate, withFinalHillClimb= WithFinalHillClimb )
+    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C, network_graph, population_size = population_size, generations = generations, mutation_rate = mutation_rate, withFinalHillClimb= WithFinalHillClimb )
 
     if(make_plot):
         plt.plot(evolution)
@@ -93,5 +93,5 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
 
 
-new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 30, True, 42, True, 1000, 200, 0.1, True)
+new_network("./csv/custom_airports.csv", "./csv/custom_routes.csv", "./csv/custom_J.csv", 1000, True, 42, True, 200, 1000, 0.1, True, 20)
     

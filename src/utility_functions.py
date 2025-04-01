@@ -50,3 +50,10 @@ def dist_to_time(distance_km, cruise_speed_kmh=900, extra_time=0.75):
     total_time = cruise_time + extra_time 
     return total_time
 
+def distance(A1, A2, graph):
+    lat1 = graph.nodes[A1]['latitude']
+    lon1 = graph.nodes[A1]['longitude']
+    lat2 = graph.nodes[A2]['latitude']
+    lon2 = graph.nodes[A2]['longitude']
+    return earth_distance(lat1, lon1, lat2, lon2)
+
