@@ -4,34 +4,12 @@ import networkx as nx
 # Parse le graphe
 G, id_to_index = parse_flow_network()
 
-# print("\nNombre total d'aéroports (nœuds) :", G.number_of_nodes())
-# print("Nombre total de connexions (arêtes) :", G.number_of_edges())
-# print("\nNombre total d'aéroports (nœuds) :", G.number_of_nodes())
-# print("Nombre total de connexions (arêtes) :", G.number_of_edges())
 
-# Exemple : afficher les 3 premiers aéroports
-print("\nAéroports (nœuds) [extrait] :")
-for i, data in list(G.nodes(data=True))[:3]:
-    print(f" - index {i} : {data['ID']} ({data['city']}, {data['country']}) - capacité : {data['capacity']}")
 # print("\nAéroports (nœuds) [extrait] :")
 # for i, data in list(G.nodes(data=True))[:3]:
 #     print(f" - index {i} : {data['ID']} ({data['city']}, {data['country']}) - capacité : {data['capacity']}")
 
-# Test inverse : ID ↔ index
-test_id = "CDG"
-print(f"\nMapping ID to index : {test_id} → {id_to_index.get(test_id, 'inconnu')}")
-print(f"Mapping index to ID : {id_to_index.get(test_id)} → {indexToId(id_to_index.get(test_id))}")
-
-# Afficher quelques routes avec distance et capacité
-print("\nConnexions [extrait] :")
-for u, v, data in list(G.edges(data=True))[:5]:
-    print(f" - {G.nodes[u]['ID']} → {G.nodes[v]['ID']} | dist = {data['distance']:.2f} km | cap = {data['capacity']}")
-
-# Vérifie si un aéroport a une capacité non assignée (erreur possible)
-missing_caps = [i for i, data in G.nodes(data=True) if data["capacity"] is None]
-print("\nAéroports sans capacité (devraient être 0 si tout est bien mappé) :", len(missing_caps))
-
-# print("\n🛣️ Connexions [extrait] :")
+# print("\nConnexions [extrait] :")
 # for u, v, data in list(G.edges(data=True))[:5]:
 #     print(f" - {G.nodes[u]['ID']} → {G.nodes[v]['ID']} | dist = {data['distance']:.2f} km | cap = {data['capacity']}")
 
@@ -45,10 +23,8 @@ def optimize_flow(G, id_to_index, source_code, target_code, F):
     """
 
     # Copie du graphe 
-    # Copie du graphe 
     G_flow = G.copy()
 
-    # Appliquer les demandes de flux
     # Appliquer les demandes de flux
     for n in G_flow.nodes():
         G_flow.nodes[n]["demand"] = 0
@@ -60,13 +36,10 @@ def optimize_flow(G, id_to_index, source_code, target_code, F):
         flow_dict = nx.min_cost_flow(G_flow)
     except nx.NetworkXUnfeasible:
         print("Aucune solution trouvable avec ce flux et ces capacités.")
-        print("Aucune solution trouvable avec ce flux et ces capacités.")
         return
-    # print(flow_dict)
     # print(flow_dict)
     # Suivi du flux pour affichage
     print("\n Cheminement du flux :")
-    print("\nCheminement du flux :")
     total_distance = 0
     paths = []  # Pour une visualisation plus claire
 
@@ -85,8 +58,7 @@ def optimize_flow(G, id_to_index, source_code, target_code, F):
     recurse_flow(id_to_index[source_code], F, [(id_to_index[source_code], F)])
 
     # Print les chemins construits
-    print(paths)
-    print(paths)
+    # print(paths)
     for p in paths:
         trace = []
         for node, count in p:
