@@ -16,26 +16,17 @@ def heuristic(A1, A2, dico):
     :param C: Coefficient pondérant le coût opérationnel du réseau.
     :return: Valeur de fitness calculée.
 """
-def evaluate_fitness(graph, E, J, C, dico):
+def evaluate_fitness(graph, E, J, C):
     """Calcule la fitness d'un individu (ensemble de connexions)."""
-    """total_distance = 0
-    punition = 0
-
-    for (At, Al) in J:
-        try:
-            total_distance += nx.astar_path_length(graph, source=At, target=Al, heuristic=lambda n1, n2: heuristic(n1, n2, dico), weight='weight')
-        except:
-            punition += 1000000  # Pénalité pour trajets impossibles
-    return punition + (total_distance / len(J)) + C * len(E)"""
     total_distance = 0
     punition = 0
-    sources = {At for At  in J}  # Ensemble des sources uniques
+    sources = {At for At, _ in J}  # Ensemble des sources uniques
 
     # Calculer une seule fois Dijkstra pour chaque source At
     try : 
         dijkstra_results = {At: nx.single_source_dijkstra_path_length(graph, At, weight='weight') for At in sources}
     except:
-        punition += 1000000  # Pénalité pour trajets impossibles
+        return 1000000  # Pénalité pour trajets impossibles
 
     for At, Al in J:
         try :
@@ -122,14 +113,10 @@ def check_min_max_range(data):
     :param mutation_rate: Probabilité de mutation.
     :return: Meilleur individu trouvé représentant le réseau optimisé.
 """
-def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False, minutes=60):
+def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False, minutes=60):
     """Exécute l'algorithme génétique."""
     time_start = int(time.time())
     time_out = (minutes - 1)  * 60
-    dico = {}
-    for start in graph_original.nodes:
-        for (_, Al) in J:
-            dico[(start, Al)] = uf.distance(start, Al, graph_original)
 
     population = initialize_population(P, population_size)
     evolution = []
@@ -142,10 +129,10 @@ def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=
             graph = nx.DiGraph()
             for start, end, weight in E:
                 graph.add_edge(start, end, weight=weight)  # Ajout de poids aux arêtes
-            fitnesses.append(evaluate_fitness(graph, E, J, C, dico))
+            fitnesses.append(evaluate_fitness(graph, E, J, C))
         # print(min(fitnesses))
         evolution.append(min(fitnesses))
-        print(min(fitnesses))
+        # print(min(fitnesses))
         
         new_population = []
         for _ in range(population_size//2):
@@ -156,7 +143,7 @@ def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=
         #population = sorted(new_population, key=lambda ind: evaluate_fitness(nx.DiGraph(ind), ind, J, C))[:population_size]
         population = sorted(
             new_population, 
-            key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C, dico)
+            key=lambda ind: evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in ind]), ind, J, C)
         )[:population_size]
 
         if check_min_max_range(evolution):
@@ -172,14 +159,14 @@ def genetic_algorithm(P, J, C,graph_original, population_size=1000, generations=
             return neighbors
 
         best_individual = population[0]
-        best_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in best_individual]), best_individual, J, C, dico)
+        best_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in best_individual]), best_individual, J, C)
         
         improved = True
         while improved:
             improved = False
             neighbors = generateNeighbors(best_individual, P)
             for neighbor in neighbors:
-                neighbor_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in neighbor]), neighbor, J, C, dico)
+                neighbor_fitness = evaluate_fitness(nx.DiGraph([(start, end, {"weight": weight}) for start, end, weight in neighbor]), neighbor, J, C)
                 if neighbor_fitness < best_fitness:
                     best_individual = neighbor
                     best_fitness = neighbor_fitness
