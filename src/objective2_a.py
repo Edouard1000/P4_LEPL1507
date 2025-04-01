@@ -7,22 +7,22 @@ G, id_to_index = parse_flow_network()
 print("\nNombre total d'aéroports (nœuds) :", G.number_of_nodes())
 print("Nombre total de connexions (arêtes) :", G.number_of_edges())
 
-# 🔎 Exemple : afficher les 3 premiers aéroports
+# Exemple : afficher les 3 premiers aéroports
 print("\nAéroports (nœuds) [extrait] :")
 for i, data in list(G.nodes(data=True))[:3]:
     print(f" - index {i} : {data['ID']} ({data['city']}, {data['country']}) - capacité : {data['capacity']}")
 
-# 🔁 Test inverse : ID ↔ index
+# Test inverse : ID ↔ index
 test_id = "CDG"
 print(f"\nMapping ID to index : {test_id} → {id_to_index.get(test_id, 'inconnu')}")
 print(f"Mapping index to ID : {id_to_index.get(test_id)} → {indexToId(id_to_index.get(test_id))}")
 
-# ✈️ Afficher quelques routes avec distance et capacité
-print("\n🛣️ Connexions [extrait] :")
+# Afficher quelques routes avec distance et capacité
+print("\nConnexions [extrait] :")
 for u, v, data in list(G.edges(data=True))[:5]:
     print(f" - {G.nodes[u]['ID']} → {G.nodes[v]['ID']} | dist = {data['distance']:.2f} km | cap = {data['capacity']}")
 
-# 💥 Vérifie si un aéroport a une capacité non assignée (erreur possible)
+# Vérifie si un aéroport a une capacité non assignée (erreur possible)
 missing_caps = [i for i, data in G.nodes(data=True) if data["capacity"] is None]
 print("\nAéroports sans capacité (devraient être 0 si tout est bien mappé) :", len(missing_caps))
 
@@ -49,11 +49,11 @@ def optimize_flow(G, id_to_index, source_code, target_code, F):
     try:
         flow_dict = nx.min_cost_flow(G_flow)
     except nx.NetworkXUnfeasible:
-        print("❌ Aucune solution trouvable avec ce flux et ces capacités.")
+        print("Aucune solution trouvable avec ce flux et ces capacités.")
         return
 
     # Suivi du flux pour affichage
-    print("\n📦 Cheminement du flux :")
+    print("\n Cheminement du flux :")
     total_distance = 0
     paths = []  # Pour une visualisation plus claire
 
@@ -80,8 +80,8 @@ def optimize_flow(G, id_to_index, source_code, target_code, F):
 
     # Afficher la distance moyenne parcourue
     avg_distance = total_distance / F
-    print(f"\n📏 Distance totale : {total_distance:.2f} km")
-    print(f"📊 Distance moyenne par passager : {avg_distance:.2f} km")
+    print(f"\n Distance totale : {total_distance:.2f} km")
+    print(f"Distance moyenne par passager : {avg_distance:.2f} km")
 
 G, id_to_index = parse_flow_network()
 optimize_flow(G, id_to_index, source_code="CDG", target_code="BKK", F=1000)
