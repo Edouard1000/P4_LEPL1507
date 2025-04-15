@@ -106,22 +106,7 @@ Implémente l'algorithme de Dijkstra pour la recherche de chemins optimaux.
 - **`optimized_dijkstra(graph, starts, endss)`**
   - Implémente une version optimisée de Dijkstra utilisant `networkx`.
 
-### 3. `f.py`
-Fichier contenant des fonctions de traitement de données et d'optimisation.
-
-- **`appliquer_masque(dico, masque)`**
-  - *Arguments:*
-    - `dico (dict)`: Dictionnaire représentant les relations.
-    - `masque (list)`: Liste de booléens appliquant un filtre.
-  - *Retourne:* Un dictionnaire filtré.
-
-- **`f(trajectories, network, C, airport_to_connect)`**
-  - Fonction de calcul d'une métrique d'optimisation.
-
-- **`findOptimalTrajectory(network, C, output_folder, airport_to_connect_list)`**
-  - Recherche la meilleure trajectoire dans un réseau donné.
-
-### 4. `genetics.py`
+### 3. `genetics.py`
 Implémente un algorithme génétique pour optimiser le réseau aérien.
 
 - **`evaluate_fitness(graph, E, J, C)`**
