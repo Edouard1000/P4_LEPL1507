@@ -76,7 +76,8 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
         saved_trajectory = file.read()
         # print("Trajectoire optimale enregistrée dans le fichier:", saved_trajectory)
     # print("here")
-    ap.plot_airport_network('csv/airports.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
+    if(make_plot):
+        ap.plot_airport_network('csv/airports.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
 
     # print("evolution = ")
     # print(evolution[len(evolution)-1])
@@ -95,7 +96,7 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
 
 
-new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
+# new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
 
 def plot_fitness_vs_population_size(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, population_sizes):
     fitness_values = []

@@ -118,7 +118,7 @@ def generateNeighbors(best_individual, P):
     :param mutation_rate: Probabilité de mutation.
     :return: Meilleur individu trouvé représentant le réseau optimisé.
 """
-def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = False, minutes=60):
+def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_rate=0.1, withFinalHillClimb = True, minutes=60):
     """Exécute l'algorithme génétique."""
     time_start = int(time.time())
     time_out = (minutes - 10)  * 60
@@ -159,7 +159,7 @@ def genetic_algorithm(P, J, C, population_size=1000, generations=200, mutation_r
             fitnesses = [fit for fit, _ in fitnesses_with_individuals[:population_size]]
 
             evolution.append(fitnesses[0])
-            print("Fitness actuelle:", fitnesses[0])
+            # print("Fitness actuelle:", fitnesses[0])
 
             if check_min_max_range(evolution):
                 shouldLoop = False
