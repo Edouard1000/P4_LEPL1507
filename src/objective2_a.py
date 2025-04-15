@@ -71,4 +71,4 @@ def optimize_flow(G, id_to_index, source_code, target_code, F):
     print(f"Distance moyenne par passager : {avg_distance:.2f} km")
 
 G, id_to_index = parse_flow_network()
-optimize_flow(G, id_to_index, source_code="CDG", target_code="BKK", F=1000)
+optimize_flow(G, id_to_index, source_code="PEK", target_code="ALG", F=1000)
