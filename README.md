@@ -1,4 +1,30 @@
-README
+## Structure du Projet
+---
+
+```bash                     
+├── csv/                       
+│ ├── airports.csv            
+│ └── capacities_airports.csv 
+├── output_csv/    
+│ ├── network_graph_adj_matrix.csv            
+│ └── network_graph_adj_matrix.csv 
+│ ├── optimal_trajectory.csv                               
+├── src/                 
+│ ├── analyse/
+│ │ └── assets/
+│ │   └── ...                   # Emoticones pour l'interface graphique
+│ ├── airpots_plot.py
+│ ├── dijkstra.py
+│ ├── generate_journeys.py      # Generation de parcours (J)
+│ ├── genetics.py
+│ ├── graphic_interface.py
+│ ├── main.py
+│ ├── new_network.py            # Description du projet (ce fichier)
+│ └── parse.py
+├── .gitignore   
+└── README.md                   # Fichier de configuration Git
+
+```
 
 # csv
 Contient les documents csv à prendre en entrée
@@ -115,35 +141,43 @@ Implémente un algorithme génétique pour optimiser le réseau aérien.
 - **`genetic_algorithm(P, J, C, population_size=50, generations=100, mutation_rate=0.1)`**
   - Exécute l'algorithme génétique sur un ensemble de connexions possibles.
 
-### 5. `graphic_interface.py`
+### 4. `graphic_interface.py`
 Interface graphique utilisant Dash pour visualiser les routes aériennes.
 
 - **`update_best_route(start, end)`**
   - Met à jour l'affichage des meilleures routes entre deux aéroports.
 
-### 6. `main.py`
-Fichier principal exécutant l'analyse du réseau aérien.
+### 5. `main.py`
+- **Description :** Exécute le pipeline : chargement données, optimisation génétique, export matrices, visualisation, interface utilisateur.
+- **Fonctions principales :**
+  1. **`main()`** : Orchestre le pipeline (chargement CSV, parsing, matrices adjacence, temps d'escale, `compute_genetics()`, export optimal, affichage réseau, reconstruction matrices optimisées, `graphic_interface()`).
+  2. **`compute_genetics(C, random_seed=42, population_size=1000, generations=200, mutation_rate=0.1, network_graph=None, id_to_index=None, wanted_journeys_csv=None)`** : Lance l'algorithme génétique. Retourne `optimal_trajectory`, `evolution`.
 
-- **`main()`**
-  - Exécute la logique principale du projet en appelant les autres modules.
 
-### 7. `parse.py`
-Parse les fichiers CSV pour générer un graphe de réseau aérien.
+### 6. `parse.py`
+- **Description :** Parse les CSV et génère les graphes.
+- **Fonctions principales :**
+  - **`parse_airport_data(airports_file, routes_file)`** : Crée un graphe de distances.
+  - **`parse_cost(costs_file, network_graph, id_to_index)`** : Ajoute les coûts au graphe.
+  - **`parse_flow_network(airports_file, routes_file, airport_caps_file, connection_caps_file)`** : Crée un graphe de flux avec capacités et distances pour un objectif secondaire.
+  - **`indexToId(index)`** : Convertit un index de nœud en ID d'aéroport.
 
-- **`parse_airport_data(airports_file, routes_file)`**
-  - *Arguments:*
-    - `airports_file (str)`: Fichier contenant les aéroports.
-    - `routes_file (str)`: Fichier contenant les routes aériennes.
-  - *Retourne:* Un graphe de type `networkx.Graph` et un dictionnaire d'indexation.
-
+### 7. `objective2_a.py`
+- **Description :** Implémente une fonction pour optimiser le flux de passagers en utilisant l'algorithme de flot à coût minimal de NetworkX.
+- **Fonction principale :**
+  - **`optimize_flow(G, id_to_index, source_code, target_code, F)`** : Résout le problème de flot à coût minimal pour acheminer un flux `F` d'un aéroport source à un aéroport cible. Affiche le cheminement du flux et la distance moyenne parcourue.
+    - `G`: Graphe du réseau.
+    - `id_to_index`: Mapping des ID d'aéroports vers leurs index.
+    - `source_code`: ID de l'aéroport de départ.
+    - `target_code`: ID de l'aéroport d'arrivée.
+    - `F`: Flux de passagers à transporter.
 ### 8. `utility_functions.py`
 Contient des fonctions utilitaires, notamment pour le calcul des distances.
 
-- **`euclidean_distance(x, y)`**
-  - Calcule la distance euclidienne entre deux points géographiques.
-
-- **`earth_distance(lat1, lon1, lat2, lon2)`**
-  - Calcule la distance terrestre entre deux points en utilisant la géodésie.
+  - **`euclidean_distance(lat1, lon1, lat2, lon2)`** : Calcule la distance euclidienne approximative entre deux points GPS.
+  - **`earth_distance(lat1, lon1, lat2, lon2)`** : Calcule la distance terrestre précise entre deux points GPS en kilomètres.
+  - **`dist_to_time(distance_km, cruise_speed_kmh=900, extra_time=0.75)`** : Convertit une distance en temps de vol estimé (en heures), incluant le temps de croisière et un temps additionnel pour le décollage et l'atterrissage.
+  - **`distance(A1, A2, graph)`** : Récupère et calcule la distance terrestre entre deux nœuds d'un graphe en utilisant leurs coordonnées GPS.
 
 
 # tests
@@ -158,21 +192,10 @@ Ce dossier contient plusieurs fichiers de test permettant de valider les fonctio
   - `dijkstra_tests(num_nodes, prob_edge, num_starts, num_ends_per_start)`: Compare différentes implémentations de Dijkstra et mesure leur performance.
   - Vérifie que les résultats de l'algorithme sont corrects à l'aide d'assertions.
 
----
-
-## Test sur un échantillon réduit
-
-### 2. `testOnSmallSample.py`
-- **Description :** Exécute l'algorithme d'optimisation sur un petit ensemble de données.
-- **Fonction principale :**
-  - `testOnSmallSample(airports_file, routes_file, airport_to_connect_list, C)`: Charge un petit réseau aérien et exécute l'algorithme de recherche de la trajectoire optimale.
-  - Génère un graphe optimisé et affiche la carte mise à jour.
-
----
 
 ## Tests unitaires
 
-### 3. `unittest.py`
+### 2. `unittest.py`
 - **Description :** Contient des tests unitaires pour valider des fonctionnalités du projet.
 - **Fonctions principales :**
   - `distance_test()`: Vérifie le calcul des distances entre plusieurs points géographiques.
@@ -180,71 +203,13 @@ Ce dossier contient plusieurs fichiers de test permettant de valider les fonctio
   - Affiche un message de validation si tous les tests passent.
 
 ---
-
-# comments
-
-code : contains files relative to the parsing of the data and utility functions (distance, dijkstra,...)
-
-csv : contains the csv files about the airports and routes data
-
-tests : contains tests files for various uses
-
-Run : "python main.py" to find the optimal routes to keep
-
-## Formulation mathématique du problème
-
-### Problème de flot à coût minimal
-
-**Objectif :** Acheminer un flux `F` de passagers du nœud source `A_d` vers le nœud puits `A_a`, en minimisant la distance totale parcourue, tout en respectant les capacités des arcs.
-
-**Formulation :**
-
-Minimiser :  
-  ∑(u,v) ∈ E   d_uv × f_uv
-
-Sous contraintes :  
-  ∑_u f_uv = ∑_w f_vw    pour tout nœud `v` ≠ `A_d`, `A_a`  
-  ∑_v f_A_d,v − ∑_u f_u,A_d = F  
-  ∑_u f_u,A_a − ∑_v f_A_a,v = F  
-  0 ≤ f_uv ≤ c_uv    pour tout (u,v) ∈ E
-
----
-
-### Définition des variables
-
-- **G = (V, E)** : Graphe orienté des aéroports et trajets.
-- **A_d** : Aéroport de départ (source).
-- **A_a** : Aéroport d’arrivée (puits).
-- **F** : Flux total de passagers à transférer.
-- **f_uv** : Nombre de passagers empruntant la liaison de `u` vers `v`.
-- **c_uv** : Capacité maximale (passagers/jour) de la liaison `u → v`.
-- **d_uv** : Distance (ou coût) associé à la liaison `u → v`.
-
-
-
-## Formulation mathématique du problème
-
-### Problème de flot à coût minimal
-
-**Objectif :** acheminer un flux \( F \) de passagers du nœud source \( A_d \) vers le nœud puits \( A_a \), en minimisant la distance totale parcourue tout en respectant les capacités des arcs.
-
-\[
-\begin{aligned}
-\text{Minimiser} \quad & \sum_{(u,v) \in E} d_{uv} \cdot f_{uv} \\
-\text{sous contraintes} \quad 
-& \sum_{u} f_{uv} = \sum_{w} f_{vw} \quad \forall v \notin \{A_d, A_a\} \\
-& \sum_{v} f_{A_d v} - \sum_{u} f_{u A_d} = F \\
-& \sum_{u} f_{u A_a} - \sum_{v} f_{A_a v} = F \\
-& 0 \leq f_{uv} \leq c_{uv} \quad \forall (u,v) \in E
-\end{aligned}
-\]
-
-### Définition des variables
-
-- \( G = (V, E) \) : Graphe orienté des aéroports et trajets.
-- \( A_d \) : Aéroport de départ (source).
-- \( A_a \) : Aéroport d’arrivée (puits).
-- \( F \) : Flux total de passagers à transférer.
-- \( f_{uv} \) : Nombre de passagers empruntant la liaison \( u \to v \).
-- \( c_{uv} \) : Capacité maximale (passagers/jour) sur la liaison \( u \to v \).
-- \( d_{uv} \) : Distance ou coût associé à la liaison \( u \to v \).
+## Compilation
+Le projet est composé de 2 fichiers principaux :
+- **main.py :** 
+  ```bash
+  python main.py
+  ```
+- **graphic_interface.py :** 
+  ```bash
+  python graphic_interface.py
+  ```
