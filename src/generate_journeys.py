@@ -1,10 +1,10 @@
 import parse as prs
 import random
 import csv
-def generate_journeys(numberOfJourneys):
+def generate_journeys(numberOfJourneys, airports_file = 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv/airports.csv'):
     csv_folder_path = 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv' # Change this to the path of the csv folder
 
-    G, _ = prs.parse_airport_data()
+    G, _ = prs.parse_airport_data(airports_file = airports_file)
     airports = []
     for i in G.nodes:
         airports.append(G.nodes[i]["ID"])
@@ -29,22 +29,15 @@ def generate_journeys(numberOfJourneys):
 
 def generate_airport(numberOfAirport):
     csv_folder_path = 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv'  # Change this to the path of the csv folder
-
-    countries = [chr(i) for i in range(97, 97 + 10)]  # Generates 'a', 'b', ..., 'j'
-    cities = [chr(i).upper() for i in range(97, 97 + 10)]  # Generates 'A', 'B', ..., 'J'
-    airport_names = [f"Airport_{chr(i)}" for i in range(97, 97 + 10)]  # Generates 'Airport_a', 'Airport_b', ..., 'Airport_j'
-    ids = [chr(i) * 3 for i in range(97, 97 + 10)]  # Generates 'aaa', 'bbb', ..., 'jjj'
+    input_csv_path = f'{csv_folder_path}/airports.csv'
 
     airports = []
-    for _ in range(numberOfAirport):
-        name = f"{random.choice(cities)} {random.choice(airport_names)}"
-        city = random.choice(cities)
-        country = random.choice(countries)
-        ID = random.choice(ids)
-        extended_ID = f"{ID}{random.randint(100, 999)}"
-        latitude = round(random.uniform(-90, 90), 6)
-        longitude = round(random.uniform(-180, 180), 6)
-        airports.append((name, city, country, ID, extended_ID, latitude, longitude))
+    with open(input_csv_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            airports.append((row['name'], row['city'], row['country'], row['ID'], row['extended_ID'], row['latitude'], row['longitude']))
+            if len(airports) >= numberOfAirport:
+                break
 
     with open(f'{csv_folder_path}/airports_generated.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -53,5 +46,5 @@ def generate_airport(numberOfAirport):
             writer.writerow(airport)
 
 
-generate_journeys(100)
-generate_airport(100)
+# generate_journeys(100, 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv/airports_generated.csv')
+# generate_airport(15)

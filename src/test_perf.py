@@ -126,6 +126,7 @@ def plot_gj(num_journeys_start = 1, num_journeys_end = 11, step = 10, num_bar = 
         raise ValueError("num_journeys_end must be greater than num_journeys_start")
     if step <= 0:
         raise ValueError("step must be a positive integer")
+
     n = []
     times = []
     for num_journeys in range(num_journeys_start, num_journeys_end + step, step):
@@ -152,8 +153,35 @@ def plot_gj(num_journeys_start = 1, num_journeys_end = 11, step = 10, num_bar = 
 
     studyTimeComplexity(n, times, number_of_bars=10, number_of_estimators=num_estimator)
 
-def plot_ga():
-    pass
+def plot_ga(num_airports_start = 1, num_airports_end = 11, step = 10, num_bar = 10, num_estimator = 100, num_journeys = 100):
+    if num_airports_end >= 75:
+        raise ValueError("num_airports_end must be less than 75")
+    n = []
+    times = []
+    for num_airport in range(num_airports_start, num_airports_end + step, step):
+        n.append(num_airport)
+        gj.generate_airport(num_airport)
+        gj.generate_journeys(2, 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv/airports_generated.csv') # à changer
+        start_time = time.time()
+        nn.new_network("./csv/airports_generated.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, False, 20, 1000, 0.1, False, 20)
+        end_time = time.time()
+        times.append(end_time - start_time)
+
+    plt.plot(range(num_airports_start, num_airports_end + step, step), times, marker='o')
+    plt.xlabel('Number of Airports')
+    plt.ylabel('Execution Time (s)')
+    plt.title('Execution Time vs Number of Airports')
+    plt.grid(True)
+    plt.show()
+
+    plt.loglog(range(num_airports_start, num_airports_end + step, step), times, marker='o')
+    plt.xlabel('Number of Airports (log scale)')
+    plt.ylabel('Execution Time (s) (log scale)')
+    plt.title('Log-Log Plot: Execution Time vs Number of Airports')
+    plt.grid(True, which="both", linestyle='--')
+    plt.show()
+
+    studyTimeComplexity(n, times, number_of_bars=num_bar, number_of_estimators=num_estimator)
         
 
 num_simulations_for_complexity = 1 # half the number of simulations (charging bars) - 2
@@ -161,6 +189,12 @@ step = 20 # step for the number of journeys
 num_bar = 10 #nombre de barres dans la pdf
 num_estimator = 100 # un nombre trop petit comme inférieur au nombre de barres de chargement fait perdre de l'information. Prendre un nombre trop grand n'est pas utile.
 
-plot_gj(num_journeys_start= 1, num_journeys_end=1 + step + step * 2 * num_simulations_for_complexity, step=step, num_bar=num_bar, num_estimator=num_estimator)
+# plot_gj(num_journeys_start= 1, num_journeys_end=1 + step + step * 2 * num_simulations_for_complexity, step=step, num_bar=num_bar, num_estimator=num_estimator)
 # pour généré un plots pour des wanteds_journeys de différentes tailles.
 
+step = 5
+num_bar = 10 #nombre de barres dans la pdf
+num_estimator = 100 # un nombre trop petit comme inférieur au nombre de barres de chargement fait perdre de l'information. Prendre un nombre trop grand n'est pas utile.
+num_simulations_for_complexity = 7 # attention max 75 aeroport donc le plus proche possible de 75 mais pas 75
+
+plot_ga(num_airports_start= 1 +step, num_airports_end=1 + step * 2 * num_simulations_for_complexity, step=step, num_bar=num_bar, num_estimator=num_estimator, num_journeys = 100)
