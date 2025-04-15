@@ -7,6 +7,8 @@ import pandas as pd
 import airpots_plot as ap 
 import genetics as gen
 import random
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 import matplotlib.pyplot as plt
 
 def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, WithFinalHillClimb = False, random_seed = 42, make_plot = False, population_size = 1000, generations = 200, mutation_rate = 0.1, print_final_result = False, minutes = 60):
@@ -49,7 +51,7 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
     J = [(id_to_index[t[0]], id_to_index[t[1]]) for t in J]
 
-    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C, network_graph, population_size = population_size, generations = generations, mutation_rate = mutation_rate, withFinalHillClimb= WithFinalHillClimb )
+    optimal_trajectory, evolution = gen.genetic_algorithm(P, J, C, population_size = population_size, generations = generations, mutation_rate = mutation_rate, withFinalHillClimb= WithFinalHillClimb )
 
     if(make_plot):
         plt.plot(evolution)
@@ -74,7 +76,8 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
         saved_trajectory = file.read()
         # print("Trajectoire optimale enregistrée dans le fichier:", saved_trajectory)
     # print("here")
-    ap.plot_airport_network('csv/airports.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
+    if(make_plot):
+        ap.plot_airport_network('csv/airports.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
 
     # print("evolution = ")
     # print(evolution[len(evolution)-1])
@@ -93,5 +96,27 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
 
 
-new_network("./csv/custom_airports.csv", "./csv/custom_routes.csv", "./csv/custom_J.csv", 1000, True, 42, True, 200, 1000, 0.1, True, 20)
-    
+# new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
+
+def plot_fitness_vs_population_size(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, population_sizes):
+    fitness_values = []
+
+    for population_size in population_sizes:
+        _, fitness = new_network(
+            airport_csv,
+            pre_existing_routes_csv,
+            wanted_journeys_csv,
+            C,
+            population_size=population_size,
+        )
+        fitness_values.append(fitness)
+
+    plt.plot(population_sizes, fitness_values, marker='o')
+    plt.xlabel('Population Size')
+    plt.ylabel('Fitness')
+    plt.title('Fitness vs Population Size')
+    plt.grid()
+    plt.show()
+
+
+# zplot_fitness_vs_population_size("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, population_sizes=[10, 20, 30, 40, 50])
