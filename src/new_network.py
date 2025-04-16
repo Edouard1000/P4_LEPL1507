@@ -10,7 +10,8 @@ import random
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
-
+import seaborn as sns
+from matplotlib.ticker import FormatStrFormatter
 def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, WithFinalHillClimb = False, random_seed = 42, make_plot = False, population_size = 1000, generations = 200, mutation_rate = 0.1, print_final_result = False, minutes = 60):
 
     """
@@ -96,27 +97,59 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
 
 
 
-# new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
+#new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
 
-def plot_fitness_vs_population_size(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, population_sizes):
-    fitness_values = []
+def plot_fitness_vs_population_size(
+    airport_csv,
+    pre_existing_routes_csv,
+    wanted_journeys_csv,
+    C,
+    population_sizes,
+    generations_list=[200]  # Valeur par défaut si on ne précise rien
+):
+    sns.set_style("darkgrid")
+    plt.figure(figsize=(12, 6))
 
-    for population_size in population_sizes:
-        _, fitness = new_network(
-            airport_csv,
-            pre_existing_routes_csv,
-            wanted_journeys_csv,
-            C,
-            population_size=population_size,
+    for generations in generations_list:
+        fitness_values = []
+
+        for population_size in population_sizes:
+            _, fitness = new_network(
+                airport_csv,
+                pre_existing_routes_csv,
+                wanted_journeys_csv,
+                C,
+                population_size=population_size,
+                generations=generations
+            )
+            fitness_values.append(fitness)
+
+        # Tracer une courbe pour chaque nombre de générations
+        plt.plot(
+            population_sizes, fitness_values,
+            marker='o', markersize=2, linestyle='-', linewidth=1.5,
+            alpha=0.8,
+            label=f"{generations} générations"
         )
-        fitness_values.append(fitness)
 
-    plt.plot(population_sizes, fitness_values, marker='o')
-    plt.xlabel('Population Size')
-    plt.ylabel('Fitness')
-    plt.title('Fitness vs Population Size')
-    plt.grid()
+    # Axes et titre
+    plt.xlabel('Taille de la population', fontsize=14, fontweight='bold')
+    plt.ylabel('Fitness', fontsize=14, fontweight='bold')
+    plt.title('Fitness vs Taille de population\n(selon le nombre de générations)', fontsize=16, fontweight='bold')
+
+    # Format scientifique de l'axe Y
+    ax = plt.gca()
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.0e'))
+
+    # Grille et style
+    plt.grid(visible=True, linestyle='-', linewidth=0.8, alpha=0.8, color='white')
+    plt.legend(fontsize=12, loc="upper right", frameon=True, fancybox=True, shadow=True, borderpad=1)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    plt.tight_layout()
+    plt.savefig("Fitness_vs_PopulationSize_Generations.png", dpi=300)
     plt.show()
 
-
-# zplot_fitness_vs_population_size("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, population_sizes=[10, 20, 30, 40, 50])
+plot_fitness_vs_population_size("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, population_sizes=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200], generations_list=[50,100,150,200])
+#[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
