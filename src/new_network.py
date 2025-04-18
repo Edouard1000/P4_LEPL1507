@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import FormatStrFormatter
+
 def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, WithFinalHillClimb = False, random_seed = 42, make_plot = False, population_size = 1000, generations = 200, mutation_rate = 0.1, print_final_result = False, minutes = 60):
 
     """
@@ -151,5 +152,5 @@ def plot_fitness_vs_population_size(
     plt.savefig("Fitness_vs_PopulationSize_Generations.png", dpi=300)
     plt.show()
 
-plot_fitness_vs_population_size("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, population_sizes=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200], generations_list=[50,100,150,200])
+# plot_fitness_vs_population_size("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, population_sizes=[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200], generations_list=[50,100,150,200])
 #[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
