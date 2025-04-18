@@ -18,6 +18,7 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
     Returns:
         dict: Liste d'adjacence avec les indices des sommets
     """
+    id_to_index = {}
     # Charger les fichiers CSV
     airports_df = pd.read_csv(airports_file)
     routes_df = pd.read_csv(routes_file)
@@ -38,13 +39,20 @@ def parse_airport_data(airports_file="./csv/airports.csv", routes_file="./csv/pr
                    ID = airport_id)
 
     # Ajouter les routes existantes comme arêtes
+    warning = True
     for _, row in routes_df.iterrows():
-        start_id, end_id = row["ID_start"], row["ID_end"]
-        if start_id in id_to_index and end_id in id_to_index:
-            start_idx, end_idx = id_to_index[start_id], id_to_index[end_id]
-            x = (G.nodes[start_idx]["latitude"], G.nodes[start_idx]["longitude"])
-            y = (G.nodes[end_idx]["latitude"], G.nodes[end_idx]["longitude"])
-            G.add_edge(start_idx, end_idx, distance=uf.earth_distance(*x, *y))
+        try :
+            start_id, end_id = row["ID_start"], row["ID_end"]
+            if start_id in id_to_index and end_id in id_to_index:
+                start_idx, end_idx = id_to_index[start_id], id_to_index[end_id]
+                x = (G.nodes[start_idx]["latitude"], G.nodes[start_idx]["longitude"])
+                y = (G.nodes[end_idx]["latitude"], G.nodes[end_idx]["longitude"])
+                G.add_edge(start_idx, end_idx, distance=uf.earth_distance(*x, *y))
+        except Exception :
+            if warning == True:
+                print("carefull one preexisting route is ignore because not in airport ! ")
+                Warning = False
+
 
     return G, id_to_index
 
