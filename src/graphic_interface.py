@@ -11,27 +11,6 @@ import utility_functions as uf
 import dijkstra as dij
 import networkx as nx
 
-graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
-cost_graph, id_to_index2 = parse.parse_cost()
-# Load data
-airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
-
-#network_graph_adj_matrix = nx.adjacency_matrix(graph, weight= "distance").todense()
-#df = pd.DataFrame(network_graph_adj_matrix)
-#df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
-#network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
-#df_price = pd.DataFrame(network_graph_adj_matrix_price)
-#df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False, header=False)
-
-cost_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix_costs.csv", header=None).values
-dist_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix.csv", header=None).values
-waiting_time = pd.read_csv("./csv/waiting_times.csv", header=None).values
-
-waiting_time = pd.DataFrame(waiting_time)
-waiting_time.columns = waiting_time.iloc[0]  # Set the first row as the header
-waiting_time = waiting_time.drop(0).reset_index(drop=True)
-waiting_time['idle_time'] = waiting_time['idle_time'].astype(float)
-
 def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, dist_matrix):
 
 
@@ -294,7 +273,36 @@ def graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, di
     return app
 
 if __name__ == "__main__":
+    graph, id_to_index = parse.parse_airport_data("./csv/airports.csv", "./csv/pre_existing_routes.csv")
+    cost_graph, id_to_index2 = parse.parse_cost()
+    # Load data
+    airports = pd.read_csv("./csv/airports.csv")  # Columns: ID, Name, Latitude, Longitude
+
+    network_graph_adj_matrix = nx.adjacency_matrix(graph, weight= "distance").todense()
+    df = pd.DataFrame(network_graph_adj_matrix)
+    df.to_csv("./output_csv/network_graph_adj_matrix.csv", index=False, header=False)
+    network_graph_adj_matrix_price = nx.adjacency_matrix(cost_graph, weight= "distance").todense()
+    df_price = pd.DataFrame(network_graph_adj_matrix_price)
+    df_price.to_csv("./output_csv/network_graph_adj_matrix_costs.csv", index=False, header=False)
+
+    cost_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix_costs.csv", header=None).values
+    dist_matrix  = pd.read_csv("./output_csv/network_graph_adj_matrix.csv", header=None).values
+    waiting_time = pd.read_csv("./csv/waiting_times.csv", header=None).values
+
+    waiting_time = pd.DataFrame(waiting_time)
+    waiting_time.columns = waiting_time.iloc[0]  # Set the first row as the header
+    waiting_time = waiting_time.drop(0).reset_index(drop=True)
+    waiting_time['idle_time'] = waiting_time['idle_time'].astype(float)
+
     app = graphic_interface(airports, cost_graph, graph, waiting_time, cost_matrix, dist_matrix)
+
+    # Automatically open the interface in the default web browser
+    def open_browser():
+        webbrowser.open_new("http://127.0.0.1:8050/")
+
+    # Start the browser opening in a separate thread to avoid blocking
+    threading.Thread(target=open_browser).start()
+
     app.run_server(debug=True, use_reloader=False)
 
     
