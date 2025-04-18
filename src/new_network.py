@@ -68,18 +68,18 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
     # print("Trajectoire optimale:", optimal_trajectory)
 
     # Enregistrer la trajectoire optimale dans un fichier CSV
-    with open(f"{output_folder}/optimal_trajectory.csv", "w") as file:
+    with open(f"{output_folder}/new_routes.csv", "w") as file:
         file.write("ID_start,ID_end\n")
         for edge in optimal_trajectory:
             file.write(f"{index_to_id[edge[0]]},{index_to_id[edge[1]]}\n")
 
     # Vérifier le contenu du fichier de sortie
-    with open(f"{output_folder}/optimal_trajectory.csv", "r") as file:
+    with open(f"{output_folder}/new_routes.csv", "r") as file:
         saved_trajectory = file.read()
         # print("Trajectoire optimale enregistrée dans le fichier:", saved_trajectory)
     # print("here")
     if(make_plot):
-        ap.plot_airport_network('csv/airports.csv', 'output_csv/optimal_trajectory.csv', title="New Airport Network")
+        ap.plot_airport_network('csv/airports.csv', 'output_csv/new_routes.csv', title="New Airport Network")
 
     # print("evolution = ")
     # print(evolution[len(evolution)-1])
@@ -94,11 +94,11 @@ def new_network(airport_csv, pre_existing_routes_csv, wanted_journeys_csv, C, Wi
         print("Trajectoire optimale:", obt)
         print("Fitness = ", evolution[len(evolution)-1])    
 
-    return obt, evolution[len(evolution)-1]
+    return evolution[len(evolution)-1], obt
 
 
 
-#new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
+new_network("./csv/airports.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, True, 20, 1000, 0.1, True, 20)
 
 def plot_fitness_vs_population_size(
     airport_csv,
