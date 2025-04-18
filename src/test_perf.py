@@ -191,7 +191,32 @@ def plot_ga(num_airports_start = 1, num_airports_end = 11, step = 10, num_bar = 
         plt.show()
 
     return studyTimeComplexity(n, times, number_of_bars=num_bar, number_of_estimators=num_estimator, withPlot=withPlot)
-        
+
+def plot_pa():
+    num_airports_list = [10, 20, 30, 40, 50, 60]
+    step = 100
+    i_values = range(5, 1006, step)
+    plt.figure(figsize=(10, 6))
+
+    for num_airports in num_airports_list:
+        times = []
+        gj.generate_airport(num_airports)
+        gj.generate_journeys(100, 'c:/Users/thoma/Desktop/3e/P4/code/P4_LEPL1507/csv/airports_generated.csv')
+        for i in i_values:
+            start_time = time.time()
+            nn.new_network("./csv/airports_generated.csv", "./csv/pre_existing_routes.csv", "./csv/wanted_journeys.csv", 1000, True, 42, False, i, 1000, 0.1, False, 20)
+            end_time = time.time()
+            times.append(end_time - start_time)
+        plt.plot(i_values, times, marker='o', label=f'{num_airports} Airports')
+
+    plt.xlabel('Parameter i')
+    plt.ylabel('Execution Time (s)')
+    plt.title('Execution Time vs Parameter population size (i)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+plot_pa()
 
 num_simulations_for_complexity = 5 # half the number of simulations (charging bars) - 2
 step = 10 # step for the number of journeys
