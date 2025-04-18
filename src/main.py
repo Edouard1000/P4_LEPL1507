@@ -61,7 +61,7 @@ def main():
     # ------------------------
     # -- Genetic Algorithm ---
     # ------------------------
-    
+
     print("----------- GENETICS ALGORITHM --------------\n \n")
     C = 1000
     optimal_trajectory, evolution = compute_genetics(C, random_seed = 22, population_size = 200, 
@@ -103,6 +103,7 @@ def main():
     # --------------------------
     # --- Graphic Interface ----
     # --------------------------
+    
     print("----------- LAUNCHING THE INTERFACE --------------\n")
 
     # exécute l'interface graphique à partir du graphe original
